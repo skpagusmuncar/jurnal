@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Me - Developer Profile</title>
+    <style>
+        :root {
+            --primary: #1e293b;
+            --accent: #2563eb;
+            --bg: #f8fafc;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { background-color: var(--bg); color: #334155; }
+        .navbar { background: #ffffff; padding: 15px 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
+        .brand { font-size: 1.3rem; font-weight: bold; color: var(--primary); text-decoration: none; }
+        .container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        .card { background: white; border-radius: 12px; padding: 30px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); text-align: center; }
+        .avatar { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 20px; border: 3px solid var(--accent); }
+        h1 { color: var(--primary); font-size: 1.8rem; margin-bottom: 5px; }
+        .subtitle { color: #64748b; font-size: 1rem; margin-bottom: 20px; }
+        .bio { font-size: 1rem; line-height: 1.6; color: #475569; margin-bottom: 25px; }
+        .btn { padding: 10px 20px; border-radius: 6px; font-weight: 600; text-decoration: none; color: white; background: var(--accent); display: inline-block; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="index.html" class="brand">📋 E-Rencana Aksi</a>
+        <a href="index.html" class="btn" style="padding: 6px 14px; font-size: 0.85rem;">← Kembali</a>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <img src="https://via.placeholder.com/150" alt="Profile" class="avatar">
+            <h1>Profil Developer</h1>
+            <p class="subtitle">Pengembang Aplikasi & Pendidik</p>
+            <p class="bio">
+                Selamat datang! Halaman ini dikembangkan untuk mendukung transparansi, efisiensi, dan kemudahan pelaporan jurnal harian serta rencana aksi berbasis teknologi web terkini.
+            </p>
+            <a href="index.html" class="btn">Kembali ke Beranda</a>
+        </div>
+    </div>
+
+</body>
+</html>

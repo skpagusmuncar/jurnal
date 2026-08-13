@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Rencana Aksi - Google Sheets Database</title>
+    <style>
+        :root {
+            --primary: #1e293b;
+            --accent: #2563eb;
+            --bg: #f8fafc;
+            --border: #cbd5e1;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background-color: var(--bg); color: #334155; padding: 20px; }
+
+        .app-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 1024px) { .app-container { grid-template-columns: 1fr; } }
+
+        .card { background: #ffffff; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        h2 { font-size: 1.2rem; color: var(--primary); margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; }
+
+        .form-group { margin-bottom: 12px; }
+        label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; color: #475569; }
+
+        input[type="text"], input[type="date"], input[type="file"], textarea {
+            width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.9rem;
+        }
+
+        .row { display: flex; gap: 10px; }
+        .row .form-group { flex: 1; }
+
+        .btn { padding: 8px 12px; border: none; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 0.85rem; transition: 0.2s; }
+        .btn-primary { background-color: var(--accent); color: white; }
+        .btn-success { background-color: #16a34a; color: white; width: 100%; margin-top: 10px; padding: 10px; font-size: 0.95rem; }
+        .btn-warning { background-color: #d97706; color: white; }
+        .btn-danger { background-color: #dc2626; color: white; }
+
+        .doc-preview { background: #ffffff; padding: 40px 50px; min-height: 297mm; font-family: Arial, sans-serif; color: #000; box-shadow: 0 0 10px rgba(0,0,0,0.08); }
+        .doc-header { text-align: center; margin-bottom: 25px; }
+        .doc-header h3 { font-size: 12pt; font-weight: bold; margin-bottom: 12px; text-transform: uppercase; }
+        .doc-header h4 { font-size: 11pt; font-weight: bold; line-height: 1.4; max-width: 90%; margin: 0 auto; }
+
+        .meta-table { width: 100%; margin-bottom: 20px; font-size: 10pt; border-collapse: collapse; }
+        .meta-table td { padding: 3px 0; vertical-align: top; }
+        .meta-table td.label { width: 150px; font-weight: bold; }
+        .meta-table td.colon { width: 15px; font-weight: bold; }
+        .meta-table td.value { font-weight: bold; }
+
+        .content-table { width: 100%; border-collapse: collapse; font-size: 9.5pt; }
+        .content-table th, .content-table td { border: 1px solid #000; padding: 8px 10px; vertical-align: top; }
+        .content-table th { background-color: #f2f2f2; text-align: center; font-weight: bold; }
+
+        .content-table td.col-no { text-align: center; width: 40px; }
+        .content-table td.col-tgl { text-align: center; width: 100px; white-space: nowrap; }
+        .content-table td.col-kegiatan { width: 42%; }
+        .content-table td.col-dokumen { width: 42%; word-break: break-word; }
+
+        .doc-img-preview { max-width: 100%; max-height: 180px; object-fit: contain; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; }
+        .text-bold { font-weight: bold; }
+        .action-btns { display: flex; gap: 4px; justify-content: center; }
+        .doc-link { color: #2563eb; text-decoration: underline; }
+
+        #loadingStatus { font-size: 0.85rem; color: #d97706; font-weight: bold; margin-bottom: 10px; display: none; }
+
+        /* ATURAN UNTUK CETAK PDF (MENGHILANGKAN KOLOM AKSI) */
+        @media print {
+            body { background: white; padding: 0; }
+            .no-print, .col-aksi, th.col-aksi, td.col-aksi { display: none !important; }
+            .app-container { display: block; }
+            .doc-preview { box-shadow: none; padding: 0; min-height: auto; }
+            .doc-link { color: #000; text-decoration: underline; }
+            @page { size: A4 portrait; margin: 15mm; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- PANEL INPUT FORM -->
+    <div class="card no-print">
+        <h2>Header & Informasi Pegawai</h2>
+        <div class="form-group">
+            <label>Judul Rencana Aksi</label>
+            <input type="text" id="judulAksi" value="RENCANA AKSI 1" oninput="renderMeta()">
+        </div>
+        <div class="form-group">
+            <label>Sub-Judul / Indikator</label>
+            <textarea id="subJudul" rows="2" oninput="renderMeta()">Persentase Pelaksanaan Tugas Sesuai SOP dalam Mendukung Peningkatan Kualitas Layanan Pendidikan</textarea>
+        </div>
+        <div class="form-group">
+            <label>Nama Pegawai</label>
+            <input type="text" id="namaPegawai" value="AGUS SUYATNO, S.Kom" oninput="renderMeta()">
+        </div>
+        <div class="row">
+            <div class="form-group">
+                <label>NIP</label>
+                <input type="text" id="nipPegawai" value="197302132015211032" oninput="renderMeta()">
+            </div>
+            <div class="form-group">
+                <label>Jabatan</label>
+                <input type="text" id="jabatanPegawai" value="Guru Ahli Pertama" oninput="renderMeta()">
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                <label>Unit Kerja</label>
+                <input type="text" id="unitKerja" value="SMAN 1 Muncar" oninput="renderMeta()">
+            </div>
+            <div class="form-group">
+                <label>Periode Penilaian</label>
+                <input type="text" id="periode" value="2026" oninput="renderMeta()">
+            </div>
+        </div>
+
+        <h2 id="formTitle">Tambah / Edit Baris Kegiatan</h2>
+        <div id="loadingStatus">⏳ Memproses data ke Google Sheets...</div>
+
+        <input type="hidden" id="editId" value="-1">
+        <input type="hidden" id="imageBase64" value="">
+        <input type="hidden" id="existingGambar" value="">
+        
+        <div class="row">
+            <div class="form-group">
+                <label>Tanggal</label>
+                <input type="date" id="inputTanggal">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Kegiatan Tugas Jabatan</label>
+            <textarea id="inputKegiatan" rows="3" placeholder="Contoh: LIBUR SEMESTER GENAP..."></textarea>
+        </div>
+        <div class="form-group">
+            <label>Dokumen / Sumber (Teks / Link URL)</label>
+            <textarea id="inputDokumen" rows="2" placeholder="Teks atau Tempel Link Aktif (https://...)"></textarea>
+        </div>
+        <div class="form-group">
+            <label>Upload Gambar / Tempel Link Drive</label>
+            <input type="file" id="inputGambar" accept="image/*" onchange="handleImageUpload(event)">
+        </div>
+        
+        <div class="row">
+            <button type="button" class="btn btn-primary" id="btnSubmit" style="width:100%" onclick="saveEntry()">+ Simpan ke Google Sheets</button>
+            <button type="button" class="btn btn-warning" id="btnCancel" style="display:none;" onclick="cancelEdit()">Batal</button>
+        </div>
+
+        <button type="button" class="btn btn-success" onclick="window.print()">🖨️ Cetak / Download PDF</button>
+    </div>
+
+    <!-- PANEL PREVIEW DOKUMEN -->
+    <div class="doc-preview" id="printArea">
+        <div class="doc-header">
+            <h3 id="prevJudul">RENCANA AKSI 1</h3>
+            <h4 id="prevSubJudul">Persentase Pelaksanaan Tugas Sesuai SOP dalam Mendukung Peningkatan Kualitas Layanan Pendidikan</h4>
+        </div>
+
+        <table class="meta-table">
+            <tr><td class="label">Nama</td><td class="colon">:</td><td class="value" id="prevNama">AGUS SUYATNO, S.Kom</td></tr>
+            <tr><td class="label">NIP</td><td class="colon">:</td><td class="value" id="prevNip">197302132015211032</td></tr>
+            <tr><td class="label">Jabatan</td><td class="colon">:</td><td class="value" id="prevJabatan">Guru Ahli Pertama</td></tr>
+            <tr><td class="label">Unit Kerja</td><td class="colon">:</td><td class="value" id="prevUnit">SMAN 1 Muncar</td></tr>
+            <tr><td class="label">Periode Penilaian</td><td class="colon">:</td><td class="value" id="prevPeriode">2026</td></tr>
+        </table>
+
+        <table class="content-table">
+            <thead>
+                <tr>
+                    <th class="col-no">No</th>
+                    <th class="col-tgl">Tanggal</th>
+                    <th class="col-kegiatan">Kegiatan Tugas Jabatan</th>
+                    <th class="col-dokumen">Dokumen</th>
+                    <th class="col-aksi">Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- Data dari Google Sheets akan dimuat di sini -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // MASUKKAN URL WEB APP GOOGLE APPS SCRIPT ANDA DI SINI
+    const SCRIPT_URL = "PASANG_URL_GOOGLE_APPS_SCRIPT_ANDA_DI_SINI";
+
+    let entries = [];
+
+    function showLoading(show) {
+        document.getElementById('loadingStatus').style.display = show ? 'block' : 'none';
+    }
+
+    function formatDateIndo(dateStr) {
+        if(!dateStr) return "";
+        const parts = dateStr.split("-");
+        return parts.length === 3 ? `${parts[2]}-${parts[1]}-${parts[0]}` : dateStr;
+    }
+
+    function convertDriveUrlToDirectImage(url) {
+        if (!url) return "";
+        const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+        if (match && match[1]) {
+            return `https://lh3.googleusercontent.com/d/${match[1]}`;
+        }
+        return url;
+    }
+
+    function handleImageUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('imageBase64').value = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function formatDokumenField(text, gambarUrl) {
+        if (!text) text = "";
+        
+        // Cek apakah ada tautan Google Drive di dalam bidang teks
+        const driveMatch = text.match(/(https?:\/\/drive\.google\.com\/[^\s]+)/);
+        let directImgFromText = "";
+        if (driveMatch) {
+            directImgFromText = convertDriveUrlToDirectImage(driveMatch[0]);
+        }
+
+        // Format link biasa menjadi elemen tag <a>
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        let formattedText = text.replace(urlRegex, url => `<a href="${url}" target="_blank" class="doc-link">${url}</a>`);
+        formattedText = formattedText.replace(/\n/g, '<br>');
+
+        // Gunakan gambar URL dari database atau ekstrak langsung dari teks link Drive
+        const finalImgSrc = gambarUrl ? convertDriveUrlToDirectImage(gambarUrl) : directImgFromText;
+
+        if (finalImgSrc) {
+            formattedText += `<br><img src="${finalImgSrc}" class="doc-img-preview" alt="Dokumen Sumber">`;
+        }
+        return formattedText;
+    }
+
+    function renderMeta() {
+        document.getElementById('prevJudul').innerText = document.getElementById('judulAksi').value;
+        document.getElementById('prevSubJudul').innerText = document.getElementById('subJudul').value;
+        document.getElementById('prevNama').innerText = document.getElementById('namaPegawai').value;
+        document.getElementById('prevNip').innerText = document.getElementById('nipPegawai').value;
+        document.getElementById('prevJabatan').innerText = document.getElementById('jabatanPegawai').value;
+        document.getElementById('prevUnit').innerText = document.getElementById('unitKerja').value;
+        document.getElementById('prevPeriode').innerText = document.getElementById('periode').value;
+    }
+
+    function fetchDatabase() {
+        showLoading(true);
+        fetch(SCRIPT_URL)
+            .then(res => res.json())
+            .then(data => {
+                entries = data;
+                renderTable();
+                showLoading(false);
+            })
+            .catch(err => {
+                console.error(err);
+                showLoading(false);
+            });
+    }
+
+    function renderTable() {
+        renderMeta();
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+
+        entries.forEach((item, index) => {
+            const tr = document.createElement('tr');
+            const formattedKegiatan = item.kegiatan.split('\n').map(line => {
+                return (line.toUpperCase() === line && line.trim() !== '') ? `<span class="text-bold">${line}</span>` : line;
+            }).join('<br>');
+
+            const formattedDokumen = formatDokumenField(item.dokumen, item.gambar);
+
+            tr.innerHTML = `
+                <td class="col-no">${index + 1}</td>
+                <td class="col-tgl">${formatDateIndo(item.tanggal)}</td>
+                <td class="col-kegiatan">${formattedKegiatan}</td>
+                <td class="col-dokumen">${formattedDokumen}</td>
+                <td class="col-aksi">
+                    <div class="action-btns">
+                        <button class="btn btn-warning" onclick="editEntry(${index})">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteEntry(${index})">Hapus</button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function saveEntry() {
+        const tgl = document.getElementById('inputTanggal').value;
+        const keg = document.getElementById('inputKegiatan').value;
+        const dok = document.getElementById('inputDokumen').value;
+        const base64 = document.getElementById('imageBase64').value;
+        const existingImg = document.getElementById('existingGambar').value;
+        const editId = document.getElementById('editId').value;
+
+        if(!tgl || !keg) {
+            alert('Silakan isi Tanggal dan Kegiatan!');
+            return;
+        }
+
+        const payload = {
+            action: editId === "-1" ? "add" : "edit",
+            id: editId,
+            tanggal: tgl,
+            kegiatan: keg,
+            dokumen: dok,
+            gambarBase64: base64,
+            gambar: existingImg
+        };
+
+        showLoading(true);
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(res => {
+            cancelEdit();
+            fetchDatabase();
+        })
+        .catch(err => {
+            alert('Gagal menyimpan data!');
+            showLoading(false);
+        });
+    }
+
+    function editEntry(index) {
+        const item = entries[index];
+        document.getElementById('inputTanggal').value = item.tanggal;
+        document.getElementById('inputKegiatan').value = item.kegiatan;
+        document.getElementById('inputDokumen').value = item.dokumen;
+        document.getElementById('existingGambar').value = item.gambar || "";
+        document.getElementById('editId').value = item.id;
+
+        document.getElementById('formTitle').innerText = 'Edit Baris Kegiatan #' + (index + 1);
+        document.getElementById('btnSubmit').innerText = 'Simpan Perubahan';
+        document.getElementById('btnCancel').style.display = 'inline-block';
+    }
+
+    function cancelEdit() {
+        document.getElementById('inputTanggal').value = '';
+        document.getElementById('inputKegiatan').value = '';
+        document.getElementById('inputDokumen').value = '';
+        document.getElementById('inputGambar').value = '';
+        document.getElementById('imageBase64').value = '';
+        document.getElementById('existingGambar').value = '';
+        document.getElementById('editId').value = '-1';
+
+        document.getElementById('formTitle').innerText = 'Tambah / Edit Baris Kegiatan';
+        document.getElementById('btnSubmit').innerText = '+ Simpan ke Google Sheets';
+        document.getElementById('btnCancel').style.display = 'none';
+    }
+
+    function deleteEntry(index) {
+        const item = entries[index];
+        if(confirm('Yakin ingin menghapus baris kegiatan ini dari Google Sheets?')) {
+            showLoading(true);
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: "delete", id: item.id })
+            })
+            .then(res => res.json())
+            .then(res => {
+                fetchDatabase();
+            });
+        }
+    }
+
+    // Panggil fetchDatabase saat halaman web pertama kali dimuat
+    fetchDatabase();
+</script>
+
+</body>
+</html>

@@ -15,28 +15,57 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
         body { background-color: var(--bg); color: #334155; }
 
-        /* NAVBAR & LANDING PAGE */
+        /* NAVBAR & RESPONSIF HP */
         .navbar {
-            background: #ffffff; padding: 15px 40px; display: flex; justify-content: space-between;
-            align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10;
+            background: #ffffff; 
+            padding: 15px 25px; 
+            display: flex; 
+            justify-content: space-between;
+            align-items: center; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+            position: sticky; 
+            top: 0; 
+            z-index: 10;
+            flex-wrap: wrap;
+            gap: 12px;
         }
         .brand { font-size: 1.3rem; font-weight: bold; color: var(--primary); }
         
-        .hero {
-            padding: 80px 20px; text-align: center; background: linear-gradient(135deg, #1e293b 0%, #1e3a8a 100%); color: white;
+        .nav-btn-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
-        .hero h1 { font-size: 2.3rem; margin-bottom: 15px; }
-        .hero p { font-size: 1.1rem; max-width: 600px; margin: 0 auto 30px; color: #cbd5e1; }
+
+        /* HERO & LANDING PAGE */
+        .hero {
+            padding: 60px 20px; 
+            text-align: center; 
+            background: linear-gradient(135deg, #1e293b 0%, #1e3a8a 100%); 
+            color: white;
+        }
+        .hero h1 { font-size: 2.2rem; margin-bottom: 15px; line-height: 1.2; }
+        .hero p { font-size: 1.05rem; max-width: 600px; margin: 0 auto 25px; color: #cbd5e1; line-height: 1.5; }
         
-        .features { max-width: 1100px; margin: 50px auto; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .hero-action-btns {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .features { max-width: 1100px; margin: 40px auto; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
         .feature-card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); text-align: center; }
         .feature-card h3 { color: var(--primary); margin: 15px 0 10px; }
 
         /* BUTTONS & MODAL */
-        .btn { padding: 8px 16px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn { padding: 9px 18px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; text-decoration: none; display: inline-block; text-align: center; font-size: 0.9rem; }
         .btn-primary { background: var(--accent); color: white; }
         .btn-primary:hover { background: #1d4ed8; }
         .btn-outline { background: transparent; border: 2px solid var(--accent); color: var(--accent); }
+        .btn-outline-light { background: transparent; border: 2px solid #ffffff; color: white; }
+        .btn-outline-light:hover { background: rgba(255, 255, 255, 0.15); }
         .btn-success { background: #16a34a; color: white; }
         .btn-warning { background: #d97706; color: white; }
         .btn-danger { background: #dc2626; color: white; }
@@ -44,12 +73,12 @@
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: center;
+            padding: 15px;
         }
-        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 100%; max-width: 420px; }
+        .modal-content { background: white; padding: 25px; border-radius: 8px; width: 100%; max-width: 420px; }
 
         /* DASHBOARD & FORM LAYOUT */
         .app-container { max-width: 1300px; margin: 20px auto; display: grid; grid-template-columns: 420px 1fr; gap: 20px; padding: 0 20px; }
-        @media (max-width: 1024px) { .app-container { grid-template-columns: 1fr; } }
 
         .card { background: #ffffff; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         .form-group { margin-bottom: 12px; }
@@ -59,7 +88,7 @@
         }
 
         /* DOCUMENT PREVIEW & MULTIPLE IMAGE GALLERY */
-        .doc-preview { background: #ffffff; padding: 40px 50px; min-height: 297mm; font-family: Arial, sans-serif; color: #000; box-shadow: 0 0 10px rgba(0,0,0,0.08); }
+        .doc-preview { background: #ffffff; padding: 30px; min-height: 297mm; font-family: Arial, sans-serif; color: #000; box-shadow: 0 0 10px rgba(0,0,0,0.08); overflow-x: auto; }
         .doc-header { text-align: center; margin-bottom: 25px; }
         .doc-header h3 { font-size: 12pt; font-weight: bold; margin-bottom: 12px; text-transform: uppercase; }
         .doc-header h4 { font-size: 11pt; font-weight: bold; line-height: 1.4; max-width: 90%; margin: 0 auto; }
@@ -99,6 +128,43 @@
 
         #loadingStatus { font-size: 0.85rem; color: #d97706; font-weight: bold; margin-bottom: 10px; display: none; }
 
+        /* PENYESUAIAN KHUSUS LAYAR HP (PORTRAIT) */
+        @media (max-width: 640px) {
+            .navbar {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 12px 15px;
+            }
+            .brand {
+                text-align: center;
+                margin-bottom: 5px;
+            }
+            .nav-btn-group {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .nav-btn-group .btn {
+                flex: 1;
+            }
+            .hero h1 {
+                font-size: 1.6rem;
+            }
+            .hero-action-btns {
+                flex-direction: column;
+                width: 100%;
+            }
+            .hero-action-btns .btn {
+                width: 100%;
+            }
+            .app-container {
+                grid-template-columns: 1fr;
+                padding: 0 10px;
+            }
+            .doc-preview {
+                padding: 15px;
+            }
+        }
+
         /* PRINT ATURAN CETAK PDF */
         @media print {
             body { background: white; padding: 0; }
@@ -115,11 +181,11 @@
     <!-- NAVBAR -->
     <nav class="navbar">
         <div class="brand">📋 E-Rencana Aksi</div>
-        <div id="navButtons">
+        <div id="navButtons" class="nav-btn-group">
             <button class="btn btn-outline" onclick="openModal('modalLogin')">Masuk / Login</button>
             <button class="btn btn-primary" onclick="openModal('modalRegister')">Daftar Akun</button>
         </div>
-        <div id="userInfo" style="display: none; align-items: center; gap: 15px;">
+        <div id="userInfo" style="display: none; align-items: center; justify-content: space-between; width: 100%;">
             <span id="userDisplayName" style="font-weight: bold; color: var(--primary);"></span>
             <button class="btn btn-danger" onclick="logout()">Keluar</button>
         </div>
@@ -130,7 +196,11 @@
         <section class="hero">
             <h1>Sistem Rencana Aksi & Laporan Kegiatan</h1>
             <p>Kelola laporan harian, integrasi bukti dokumen Google Drive (Folder data_jurnal), dan cetak format PDF resmi secara otomatis.</p>
-            <button class="btn btn-primary" style="padding: 12px 24px; font-size: 1rem;" onclick="openModal('modalLogin')">Mulai Sekarang</button>
+            
+            <div class="hero-action-btns">
+                <button class="btn btn-primary" style="padding: 12px 24px; font-size: 1rem;" onclick="openModal('modalLogin')">Mulai Sekarang</button>
+                <a href="aboutme.html" class="btn btn-outline-light" style="padding: 12px 24px; font-size: 1rem;">Development</a>
+            </div>
         </section>
 
         <section class="features">
@@ -313,7 +383,7 @@
         currentUser = null;
         document.getElementById('dashboardApp').style.display = 'none';
         document.getElementById('landingPage').style.display = 'block';
-        document.getElementById('navButtons').style.display = 'block';
+        document.getElementById('navButtons').style.display = 'flex';
         document.getElementById('userInfo').style.display = 'none';
     }
 

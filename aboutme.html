@@ -3,42 +3,224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Me - Developer Profile</title>
+    <title>About Developer - AGUS SUYATNO, S.Kom</title>
     <style>
         :root {
             --primary: #1e293b;
-            --accent: #2563eb;
+            --accent: #0284c7;
+            --accent-dark: #0369a1;
             --bg: #f8fafc;
+            --border: #e2e8f0;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
-        body { background-color: var(--bg); color: #334155; }
-        .navbar { background: #ffffff; padding: 15px 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
-        .brand { font-size: 1.3rem; font-weight: bold; color: var(--primary); text-decoration: none; }
-        .container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
-        .card { background: white; border-radius: 12px; padding: 30px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); text-align: center; }
-        .avatar { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 20px; border: 3px solid var(--accent); }
-        h1 { color: var(--primary); font-size: 1.8rem; margin-bottom: 5px; }
-        .subtitle { color: #64748b; font-size: 1rem; margin-bottom: 20px; }
-        .bio { font-size: 1rem; line-height: 1.6; color: #475569; margin-bottom: 25px; }
-        .btn { padding: 10px 20px; border-radius: 6px; font-weight: 600; text-decoration: none; color: white; background: var(--accent); display: inline-block; }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg); color: #334155; padding-bottom: 40px; }
+
+        /* NAVBAR */
+        .navbar {
+            background: #ffffff; 
+            padding: 15px 30px; 
+            display: flex; 
+            justify-content: space-between;
+            align-items: center; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+            position: sticky; 
+            top: 0; 
+            z-index: 10;
+        }
+        .brand { font-size: 1.25rem; font-weight: bold; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+        
+        .btn-back {
+            background-color: #2563eb;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+        .btn-back:hover { background-color: #1d4ed8; }
+
+        /* CONTAINER & CARDS */
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .main-card {
+            background: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* HERO BANNER BIRU */
+        .card-banner {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            height: 120px;
+            width: 100%;
+        }
+
+        .avatar-wrapper {
+            margin-top: -60px;
+            display: inline-block;
+        }
+
+        .avatar-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid #ffffff;
+            object-fit: cover;
+            background-color: #e2e8f0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .profile-content {
+            padding: 20px 30px 35px 30px;
+        }
+
+        .profile-name {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 2px;
+        }
+
+        .profile-alias {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .profile-role {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #0284c7;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .profile-bio {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #475569;
+            max-width: 750px;
+            margin: 0 auto;
+        }
+
+        /* GRID INFO BAWAH */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 640px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .info-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        }
+
+        .info-card h3 {
+            font-size: 1.05rem;
+            color: var(--primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 10px;
+        }
+
+        .info-list {
+            list-style: none;
+        }
+
+        .info-list li {
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            color: #334155;
+        }
+
+        .info-list li strong {
+            min-width: 110px;
+            color: #1e293b;
+        }
+
+        .info-list li a {
+            color: #0284c7;
+            text-decoration: none;
+        }
+        .info-list li a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
 
+    <!-- NAVBAR -->
     <nav class="navbar">
         <a href="index.html" class="brand">📋 E-Rencana Aksi</a>
-        <a href="index.html" class="btn" style="padding: 6px 14px; font-size: 0.85rem;">← Kembali</a>
+        <a href="index.html" class="btn-back">← Kembali</a>
     </nav>
 
     <div class="container">
-        <div class="card">
-            <img src="https://via.placeholder.com/150" alt="Profile" class="avatar">
-            <h1>Profil Developer</h1>
-            <p class="subtitle">Pengembang Aplikasi & Pendidik</p>
-            <p class="bio">
-                Selamat datang! Halaman ini dikembangkan untuk mendukung transparansi, efisiensi, dan kemudahan pelaporan jurnal harian serta rencana aksi berbasis teknologi web terkini.
-            </p>
-            <a href="index.html" class="btn">Kembali ke Beranda</a>
+        <!-- KARTU UTAMA PROFIL -->
+        <div class="main-card">
+            <div class="card-banner"></div>
+            <div class="avatar-wrapper">
+                <!-- Foto Profil diambil langsung dari tautan gambar referensi Anda -->
+                <img src="https://kodi.web.id/assets/img/profile.jpg" alt="AGUS SUYATNO, S.Kom" class="avatar-img" onerror="this.src='https://lh3.googleusercontent.com/d/1vC-9z-1y1Xy9z-1y1Xy9z-1y1Xy9z-1y'">
+            </div>
+            <div class="profile-content">
+                <h1 class="profile-name">AGUS SUYATNO, S.Kom</h1>
+                <p class="profile-alias">Gsdiredja</p>
+                <p class="profile-role">PENDIDIK & LEAD SYSTEM DEVELOPER</p>
+                <p class="profile-bio">
+                    Berdedikasi dalam dunia pendidikan dan digitalisasi sekolah. Mengembangkan platform <strong>Kodi EduAdaptif</strong> sebagai solusi sistemik untuk meringankan beban administrasi pendidik, mengintegrasikan otomasi KBM, serta menghadirkan ruang belajar digital yang adaptif bagi siswa.
+                </p>
+            </div>
+        </div>
+
+        <!-- GRID INFORMASI TAMBAHAN -->
+        <div class="info-grid">
+            <!-- KARTU EKOSISTEM -->
+            <div class="info-card">
+                <h3>⚙️ Ekosistem Platform</h3>
+                <ul class="info-list">
+                    <li><strong>Aplikasi:</strong> Kodi EduAdaptif</li>
+                    <li><strong>Versi System:</strong> v3.1 (Stable)</li>
+                    <li><strong>Engine:</strong> Apps Script & API</li>
+                    <li><strong>Portal:</strong> <a href="https://kodi.web.id" target="_blank">kodi.web.id</a></li>
+                </ul>
+            </div>
+
+            <!-- KARTU BANTUAN & KONTAK -->
+            <div class="info-card">
+                <h3>🎧 Layanan & Bantuan</h3>
+                <ul class="info-list">
+                    <li><strong>Email:</strong> <a href="mailto:agustjakra@gmail.com">agustjakra@gmail.com</a></li>
+                    <li><strong>Help Desk:</strong> <a href="https://wa.me/6282143393357" target="_blank">6282143393357</a></li>
+                    <li><strong>Lisensi:</strong> Hak Cipta Dilindungi</li>
+                    <li><strong>Development:</strong> agustjakra</li>
+                </ul>
+            </div>
         </div>
     </div>
 

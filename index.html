@@ -90,7 +90,7 @@
         /* DOCUMENT PREVIEW & MULTIPLE IMAGE GALLERY */
         .doc-preview { background: #ffffff; padding: 30px; min-height: 297mm; font-family: Arial, sans-serif; color: #000; box-shadow: 0 0 10px rgba(0,0,0,0.08); overflow-x: auto; }
         .doc-header { text-align: center; margin-bottom: 25px; }
-        .doc-header h3 { font-size: 12pt; font-weight: bold; margin-bottom: 12px; text-transform: uppercase; }
+        .doc-header h3 { font-size: 13pt; font-weight: bold; margin-bottom: 8px; text-transform: uppercase; }
         .doc-header h4 { font-size: 11pt; font-weight: bold; line-height: 1.4; max-width: 90%; margin: 0 auto; }
 
         .meta-table { width: 100%; margin-bottom: 20px; font-size: 10pt; border-collapse: collapse; }
@@ -128,8 +128,10 @@
 
         #loadingStatus { font-size: 0.85rem; color: #d97706; font-weight: bold; margin-bottom: 10px; display: none; }
 
-        /* PENYESUAIAN KHUSUS LAYAR HP (PORTRAIT) */
-        @media (max-width: 640px) {
+        /* =========================================================
+           1. PENYESUAIAN LAYAR HP & TABLET (RESPONSIVE SCREEN)
+           ========================================================= */
+        @media (max-width: 768px) {
             .navbar {
                 flex-direction: column;
                 align-items: stretch;
@@ -137,7 +139,7 @@
             }
             .brand {
                 text-align: center;
-                margin-bottom: 5px;
+                font-size: 1.15rem;
             }
             .nav-btn-group {
                 width: 100%;
@@ -145,9 +147,17 @@
             }
             .nav-btn-group .btn {
                 flex: 1;
+                font-size: 0.8rem;
+                padding: 7px 10px;
+            }
+            .hero {
+                padding: 35px 15px;
             }
             .hero h1 {
-                font-size: 1.6rem;
+                font-size: 1.4rem;
+            }
+            .hero p {
+                font-size: 0.9rem;
             }
             .hero-action-btns {
                 flex-direction: column;
@@ -160,19 +170,99 @@
                 grid-template-columns: 1fr;
                 padding: 0 10px;
             }
+            .card {
+                padding: 15px;
+            }
             .doc-preview {
                 padding: 15px;
             }
+            .doc-header h3 {
+                font-size: 11pt;
+            }
+            .doc-header h4 {
+                font-size: 9.5pt;
+            }
+            .meta-table {
+                font-size: 8.5pt;
+            }
+            .meta-table td.label {
+                width: 110px;
+            }
+            .content-table {
+                font-size: 8pt;
+            }
+            .content-table th, .content-table td {
+                padding: 5px 6px;
+            }
+            .btn {
+                padding: 7px 12px;
+                font-size: 0.82rem;
+            }
         }
 
-        /* PRINT ATURAN CETAK PDF */
+        /* =========================================================
+           2. ATURAN HASIL CETAK PRINTER / PDF (@MEDIA PRINT)
+           ========================================================= */
         @media print {
-            body { background: white; padding: 0; }
-            .no-print, .col-aksi, th.col-aksi, td.col-aksi, .navbar { display: none !important; }
-            .app-container { display: block; padding: 0; }
-            .doc-preview { box-shadow: none; padding: 0; min-height: auto; }
-            .doc-img-item { max-height: 100px; }
-            @page { size: A4 portrait; margin: 15mm; }
+            body { 
+                background: white !important; 
+                padding: 0 !important; 
+                margin: 0 !important;
+                color: #000000 !important;
+                font-family: "Times New Roman", Times, serif !important;
+            }
+            .no-print, .col-aksi, th.col-aksi, td.col-aksi, .navbar { 
+                display: none !important; 
+            }
+            .app-container { 
+                display: block !important; 
+                padding: 0 !important; 
+                margin: 0 !important;
+            }
+            .doc-preview { 
+                box-shadow: none !important; 
+                padding: 0 !important; 
+                min-height: auto !important; 
+                font-family: "Times New Roman", Times, serif !important;
+            }
+            
+            /* Judul Laporan Dipertahankan Tetap Besar saat Dicetak */
+            .doc-header h3 {
+                font-size: 13pt !important;
+                font-weight: bold !important;
+                color: #000000 !important;
+                margin-bottom: 4pt !important;
+            }
+            .doc-header h4 {
+                font-size: 11pt !important;
+                font-weight: bold !important;
+                color: #000000 !important;
+            }
+
+            /* Ukuran Standar Isi Dokumen Laporan */
+            .meta-table {
+                font-size: 10pt !important;
+                margin-bottom: 12pt !important;
+            }
+            .content-table {
+                font-size: 9.5pt !important;
+            }
+            .content-table th {
+                background-color: #f2f2f2 !important;
+                color: #000000 !important;
+            }
+            .content-table th, .content-table td {
+                border: 1pt solid #000000 !important;
+                padding: 5pt 6pt !important;
+            }
+            .doc-img-item { 
+                max-height: 100px !important; 
+            }
+            
+            @page { 
+                size: A4 portrait; 
+                margin: 15mm; 
+            }
         }
     </style>
 </head>
@@ -181,8 +271,8 @@
     <!-- NAVBAR -->
     <nav class="navbar">
         <div class="brand">
-    📋 LaporAksi Digital
-</div>
+            📋 LaporAksi Digital
+        </div>
         <div id="navButtons" class="nav-btn-group">
             <button class="btn btn-outline" onclick="openModal('modalLogin')">Masuk / Login</button>
             <button class="btn btn-primary" onclick="openModal('modalRegister')">Daftar Akun</button>

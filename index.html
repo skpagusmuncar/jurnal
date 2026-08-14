@@ -417,7 +417,7 @@
     </div>
 
 <script>
-    // MASUKKAN URL GOOGLE APPS SCRIPT ANDA DI SINI
+    // GANTI SCRIPT_URL DI BAWAH INI DENGAN URL WEB APP DEPLOYMENT GOOGLE APPS SCRIPT ANDA
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx58JJO7xYqUFyynSJJghTOSjVufygTiZD7j3ZIcBawVKLqL0tZAC6O4su_Yon-YraXmQ/exec";
 
     let currentUser = null;
@@ -447,6 +447,9 @@
             } else {
                 alert(res.message);
             }
+        })
+        .catch(err => {
+            alert("Gagal terhubung ke peladen!");
         });
     }
 
@@ -462,11 +465,18 @@
             periode: document.getElementById('regPeriode').value
         };
 
+        if(!payload.email || !payload.password || !payload.nama) {
+            return alert("Isi data pendaftaran secara lengkap!");
+        }
+
         fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) })
         .then(res => res.json())
         .then(res => {
             alert(res.message);
             if (res.status === "success") closeModal('modalRegister');
+        })
+        .catch(err => {
+            alert("Gagal mengirim data pendaftaran!");
         });
     }
 
@@ -508,6 +518,9 @@
             .then(data => {
                 entries = data;
                 renderTable();
+                showLoading(false);
+            })
+            .catch(err => {
                 showLoading(false);
             });
     }
@@ -710,7 +723,7 @@
         }
     }
 
-    // Auto-login jika ada sesi
+    // Auto-login jika ada sesi tersimpan
     const savedUser = localStorage.getItem('userAksiSession');
     if (savedUser) {
         currentUser = JSON.parse(savedUser);

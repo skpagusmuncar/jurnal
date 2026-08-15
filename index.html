@@ -643,21 +643,33 @@
     }
 
     function formatDateIndo(dateStr) {
-        if(!dateStr) return "";
-        const parts = dateStr.split("-");
-        return parts.length === 3 ? `${parts[2]}-${parts[1]}-${parts[0]}` : dateStr;
-    }
+        if (!dateStr) return "";
 
-    async function saveEntry() {
-        const tgl = document.getElementById('inputTanggal').value;
-        const keg = document.getElementById('inputKegiatan').value;
-        const dok = document.getElementById('inputDokumen').value;
-        const fileInput = document.getElementById('inputGambar');
+        const namaBulan = [
+            "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+            "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+        ];
 
-        if(!tgl || !keg) {
-            alert('Silakan isi Tanggal dan Kegiatan!');
-            return;
+        // Konversi string/Date menjadi objek Date
+        const d = new Date(dateStr);
+        
+        // Jika format tanggal valid
+        if (!isNaN(d.getTime())) {
+            const tgl = String(d.getDate()).padStart(2, '0');
+            const bln = namaBulan[d.getMonth()];
+            const thn = d.getFullYear();
+            return `${tgl} ${bln} ${thn}`;
         }
+
+        // Fallback jika format string berwujud YYYY-MM-DD
+        const parts = String(dateStr).split("-");
+        if (parts.length === 3) {
+            const blnIdx = parseInt(parts[1], 10) - 1;
+            return `${parts[2].padStart(2, '0')} ${namaBulan[blnIdx] || parts[1]} ${parts[0]}`;
+        }
+
+        return dateStr;
+    }
 
         showLoading(true);
 

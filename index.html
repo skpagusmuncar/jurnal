@@ -87,6 +87,44 @@
             width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.9rem;
         }
 
+        /* THUMBNAIL EDIT GAMBAR */
+        .edit-img-preview-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .edit-img-thumb {
+            position: relative;
+            width: 75px;
+            height: 75px;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #cbd5e1;
+        }
+        .edit-img-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .edit-img-delete-btn {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: rgba(220, 38, 38, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         /* DOCUMENT PREVIEW & MULTIPLE IMAGE GALLERY */
         .doc-preview { background: #ffffff; padding: 30px; min-height: 297mm; font-family: Arial, sans-serif; color: #000; box-shadow: 0 0 10px rgba(0,0,0,0.08); overflow-x: auto; }
         .doc-header { text-align: center; margin-bottom: 25px; }
@@ -129,7 +167,7 @@
         #loadingStatus { font-size: 0.85rem; color: #d97706; font-weight: bold; margin-bottom: 10px; display: none; }
 
         /* =========================================================
-           1. PENYESUAIAN LAYAR HP & TABLET (RESPONSIVE SCREEN)
+           1. RESPONSIF HP & TABLET
            ========================================================= */
         @media (max-width: 768px) {
             .navbar {
@@ -137,71 +175,28 @@
                 align-items: stretch;
                 padding: 12px 15px;
             }
-            .brand {
-                text-align: center;
-                font-size: 1.15rem;
-            }
-            .nav-btn-group {
-                width: 100%;
-                justify-content: space-between;
-            }
-            .nav-btn-group .btn {
-                flex: 1;
-                font-size: 0.8rem;
-                padding: 7px 10px;
-            }
-            .hero {
-                padding: 35px 15px;
-            }
-            .hero h1 {
-                font-size: 1.4rem;
-            }
-            .hero p {
-                font-size: 0.9rem;
-            }
-            .hero-action-btns {
-                flex-direction: column;
-                width: 100%;
-            }
-            .hero-action-btns .btn {
-                width: 100%;
-            }
-            .app-container {
-                grid-template-columns: 1fr;
-                padding: 0 10px;
-            }
-            .card {
-                padding: 15px;
-            }
-            .doc-preview {
-                padding: 15px;
-            }
-            .doc-header h3 {
-                font-size: 11pt;
-            }
-            .doc-header h4 {
-                font-size: 9.5pt;
-            }
-            .meta-table {
-                font-size: 8.5pt;
-            }
-            .meta-table td.label {
-                width: 110px;
-            }
-            .content-table {
-                font-size: 8pt;
-            }
-            .content-table th, .content-table td {
-                padding: 5px 6px;
-            }
-            .btn {
-                padding: 7px 12px;
-                font-size: 0.82rem;
-            }
+            .brand { text-align: center; font-size: 1.15rem; }
+            .nav-btn-group { width: 100%; justify-content: space-between; }
+            .nav-btn-group .btn { flex: 1; font-size: 0.8rem; padding: 7px 10px; }
+            .hero { padding: 35px 15px; }
+            .hero h1 { font-size: 1.4rem; }
+            .hero p { font-size: 0.9rem; }
+            .hero-action-btns { flex-direction: column; width: 100%; }
+            .hero-action-btns .btn { width: 100%; }
+            .app-container { grid-template-columns: 1fr; padding: 0 10px; }
+            .card { padding: 15px; }
+            .doc-preview { padding: 15px; }
+            .doc-header h3 { font-size: 11pt; }
+            .doc-header h4 { font-size: 9.5pt; }
+            .meta-table { font-size: 8.5pt; }
+            .meta-table td.label { width: 110px; }
+            .content-table { font-size: 8pt; }
+            .content-table th, .content-table td { padding: 5px 6px; }
+            .btn { padding: 7px 12px; font-size: 0.82rem; }
         }
 
         /* =========================================================
-           2. ATURAN HASIL CETAK PRINTER / PDF (@MEDIA PRINT)
+           2. FORMAT CETAK PDF
            ========================================================= */
         @media print {
             body { 
@@ -225,7 +220,6 @@
                 min-height: auto !important; 
                 font-family: "Times New Roman", Times, serif !important;
             }
-            
             .doc-header h3 {
                 font-size: 13pt !important;
                 font-weight: bold !important;
@@ -237,7 +231,6 @@
                 font-weight: bold !important;
                 color: #000000 !important;
             }
-
             .meta-table {
                 font-size: 10pt !important;
                 margin-bottom: 12pt !important;
@@ -256,7 +249,6 @@
             .doc-img-item { 
                 max-height: 100px !important; 
             }
-            
             @page { 
                 size: A4 portrait; 
                 margin: 15mm; 
@@ -300,7 +292,7 @@
             </div>
             <div class="feature-card">
                 <h3>🖼️ Multiple Photos Support</h3>
-                <p>Mendukung lebih dari 1 foto kegiatan yang otomatis tersimpan di folder Drive data_jurnal.</p>
+                <p>Mendukung foto kegiatan yang otomatis tersimpan dan terhapus di folder Drive data_jurnal.</p>
             </div>
             <div class="feature-card">
                 <h3>🖨️ Cetak PDF Resmi</h3>
@@ -328,7 +320,6 @@
                 <div id="loadingStatus">⏳ Memproses data Google Sheets...</div>
 
                 <input type="hidden" id="editId" value="-1">
-                <input type="hidden" id="existingGambar" value="">
                 
                 <div class="form-group">
                     <label>Tanggal</label>
@@ -342,8 +333,15 @@
                     <label>Dokumen / Sumber (Teks atau Tempel Link Drive)</label>
                     <textarea id="inputDokumen" rows="2" placeholder="Teks atau Tempel Link Drive Aktif (https://...)"></textarea>
                 </div>
+                
+                <!-- PREVIEW THUMBNAIL FOTO TERSIMPAN DI DRIVE SAAT EDIT -->
+                <div class="form-group" id="existingImagesWrapper" style="display:none;">
+                    <label>Foto Tersimpan Saat Ini (Klik ✕ untuk hapus dari Drive):</label>
+                    <div class="edit-img-preview-group" id="existingImagesContainer"></div>
+                </div>
+
                 <div class="form-group">
-                    <label>Upload Beberapa Gambar Foto Sekaligus</label>
+                    <label id="uploadLabel">Upload Foto Baru (Opsional)</label>
                     <input type="file" id="inputGambar" accept="image/*" multiple>
                     <small style="color:#64748b; font-size:0.75rem;">Bisa pilih lebih dari 1 foto sekaligus</small>
                 </div>
@@ -416,10 +414,12 @@
 
 <script>
     // URL WEB APP DEPLOYMENT GOOGLE APPS SCRIPT
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxTChJ-4_7Be-aZofuJvjH2E_FHYlEozvrPt1uNpL4lms-b-eJldF1OW2F9tA8xdxIUwQ/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwNvwB2P7ceRthQp_UE7SaJDOZH4h6PQo2I1f5vymR-VJuL0B-GqV7y---og7S4_3y5yw/exec";
 
     let currentUser = null;
     let entries = [];
+    let currentEditImages = [];
+    let deletedImagesFromDrive = [];
 
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
@@ -546,7 +546,7 @@
             .then(data => {
                 let list = Array.isArray(data) ? data : [];
                 
-                // Urutkan tanggal secara aman dari awal ke akhir
+                // Urutkan tanggal dari awal ke akhir
                 list.sort((a, b) => {
                     const timeA = new Date(a.tanggal).getTime() || 0;
                     const timeB = new Date(b.tanggal).getTime() || 0;
@@ -602,7 +602,7 @@
 
     function convertDriveUrlToDirectImage(url) {
         if (!url) return "";
-        const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+        const match = String(url).match(/\/d\/([a-zA-Z0-9_-]+)/) || String(url).match(/id=([a-zA-Z0-9_-]+)/);
         return match ? `https://lh3.googleusercontent.com/d/${match[1]}` : url;
     }
 
@@ -702,7 +702,8 @@
             kegiatan: keg,
             dokumen: dok,
             gambarBase64Array: base64Photos,
-            existingGambar: document.getElementById('existingGambar').value
+            existingGambar: JSON.stringify(currentEditImages),
+            deletedGambarUrls: deletedImagesFromDrive
         };
 
         fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) })
@@ -720,7 +721,6 @@
     function editEntry(index) {
         const item = entries[index];
         
-        // Format nilai kembali ke YYYY-MM-DD agar masuk ke form type="date"
         let tglValue = item.tanggal;
         const d = new Date(item.tanggal);
         if (!isNaN(d.getTime())) {
@@ -733,9 +733,59 @@
         document.getElementById('inputTanggal').value = tglValue;
         document.getElementById('inputKegiatan').value = item.kegiatan;
         document.getElementById('inputDokumen').value = item.dokumen;
-        document.getElementById('existingGambar').value = item.gambar || "";
         document.getElementById('editId').value = item.id;
         document.getElementById('btnCancel').style.display = 'inline-block';
+        document.getElementById('formTitle').innerText = "Edit Baris Kegiatan";
+        document.getElementById('btnSubmit').innerText = "✓ Update Data & Drive";
+
+        // Parse foto lama untuk ditampilkan thumbnail & tombol hapusnya
+        currentEditImages = [];
+        deletedImagesFromDrive = [];
+        if (item.gambar) {
+            try {
+                const parsed = JSON.parse(item.gambar);
+                if (Array.isArray(parsed)) currentEditImages = parsed;
+                else if (item.gambar) currentEditImages = [item.gambar];
+            } catch(e) {
+                if (item.gambar) currentEditImages = [item.gambar];
+            }
+        }
+
+        renderEditThumbnails();
+    }
+
+    function renderEditThumbnails() {
+        const container = document.getElementById('existingImagesContainer');
+        const wrapper = document.getElementById('existingImagesWrapper');
+
+        if (currentEditImages.length === 0) {
+            wrapper.style.display = 'none';
+            container.innerHTML = '';
+            return;
+        }
+
+        wrapper.style.display = 'block';
+        container.innerHTML = '';
+
+        currentEditImages.forEach((url, idx) => {
+            const thumb = document.createElement('div');
+            thumb.className = 'edit-img-thumb';
+            thumb.innerHTML = `
+                <img src="${convertDriveUrlToDirectImage(url)}" alt="Thumbnail">
+                <button type="button" class="edit-img-delete-btn" title="Hapus foto dari Drive" onclick="removeImageFromEdit(${idx})">✕</button>
+            `;
+            container.appendChild(thumb);
+        });
+    }
+
+    function removeImageFromEdit(index) {
+        if (confirm("Hapus foto ini? File di Google Drive akan otomatis dihapus saat data disimpan.")) {
+            const removedUrl = currentEditImages.splice(index, 1)[0];
+            if (removedUrl) {
+                deletedImagesFromDrive.push(removedUrl);
+            }
+            renderEditThumbnails();
+        }
     }
 
     function cancelEdit() {
@@ -743,13 +793,19 @@
         document.getElementById('inputKegiatan').value = '';
         document.getElementById('inputDokumen').value = '';
         document.getElementById('inputGambar').value = '';
-        document.getElementById('existingGambar').value = '';
         document.getElementById('editId').value = '-1';
         document.getElementById('btnCancel').style.display = 'none';
+        document.getElementById('formTitle').innerText = "Tambah / Edit Baris Kegiatan";
+        document.getElementById('btnSubmit').innerText = "+ Simpan ke Database";
+        
+        currentEditImages = [];
+        deletedImagesFromDrive = [];
+        document.getElementById('existingImagesWrapper').style.display = 'none';
+        document.getElementById('existingImagesContainer').innerHTML = '';
     }
 
     function deleteEntry(index) {
-        if (confirm("Hapus baris laporan ini?")) {
+        if (confirm("Hapus baris laporan ini beserta semua foto terkait di Google Drive?")) {
             showLoading(true);
             fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "delete", id: entries[index].id }) })
             .then(res => res.json())

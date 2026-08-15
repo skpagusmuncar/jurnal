@@ -416,7 +416,7 @@
 
 <script>
     // URL WEB APP DEPLOYMENT GOOGLE APPS SCRIPT
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby2PRHbQ77Ujlq8gsyF9Zf4oFGdppNZHIB1m-tg3y2ov8Eq0UNRRQYQM-orKt9rN3kX5A/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxTChJ-4_7Be-aZofuJvjH2E_FHYlEozvrPt1uNpL4lms-b-eJldF1OW2F9tA8xdxIUwQ/exec";
 
     let currentUser = null;
     let entries = [];
@@ -544,7 +544,12 @@
         fetch(`${SCRIPT_URL}?action=getData&email=${encodeURIComponent(currentUser.email)}`)
             .then(res => res.json())
             .then(data => {
-                entries = Array.isArray(data) ? data : [];
+                let list = Array.isArray(data) ? data : [];
+                
+                // Urutkan data berdasarkan tanggal: Dari tanggal awal (terkecil) ke akhir (terbesar)
+                list.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
+                
+                entries = list;
                 renderTable();
                 showLoading(false);
             })
@@ -756,7 +761,6 @@
     if (rawSession) {
         try {
             const session = JSON.parse(rawSession);
-            // Validasi format sesi
             const email = session.email || (session.userData && session.userData.email);
             const pass = session.password;
 
@@ -771,17 +775,15 @@
                         currentUser = res.user;
                         initDashboard();
                     } else {
-                        // Jika status akun PENDING atau diubah, paksa logout
+                        // Jika status akun PENDING atau ditolak, hapus sesi
                         logout();
                     }
                 })
                 .catch(() => {
-                    // Fallback jika offline
                     currentUser = session.userData || session;
                     initDashboard();
                 });
             } else {
-                // Sesi lama tanpa credential password, bersihkan
                 logout();
             }
         } catch (e) {

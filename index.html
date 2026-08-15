@@ -104,7 +104,7 @@
         .content-table th { background-color: #f2f2f2; text-align: center; font-weight: bold; }
 
         .content-table td.col-no { text-align: center; width: 40px; }
-        .content-table td.col-tgl { text-align: center; width: 100px; white-space: nowrap; }
+        .content-table td.col-tgl { text-align: center; width: 120px; white-space: nowrap; }
         .content-table td.col-kegiatan { width: 42%; }
         .content-table td.col-dokumen { width: 42%; word-break: break-word; }
 
@@ -546,14 +546,19 @@
             .then(data => {
                 let list = Array.isArray(data) ? data : [];
                 
-                // Urutkan data berdasarkan tanggal: Dari tanggal awal (terkecil) ke akhir (terbesar)
-                list.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
+                // Urutkan tanggal secara aman dari awal ke akhir
+                list.sort((a, b) => {
+                    const timeA = new Date(a.tanggal).getTime() || 0;
+                    const timeB = new Date(b.tanggal).getTime() || 0;
+                    return timeA - timeB;
+                });
                 
                 entries = list;
                 renderTable();
                 showLoading(false);
             })
             .catch(err => {
+                console.error("Gagal mengambil data:", err);
                 showLoading(false);
             });
     }
@@ -650,10 +655,7 @@
             "Juli", "Agustus", "September", "Oktober", "November", "Desember"
         ];
 
-        // Konversi string/Date menjadi objek Date
         const d = new Date(dateStr);
-        
-        // Jika format tanggal valid
         if (!isNaN(d.getTime())) {
             const tgl = String(d.getDate()).padStart(2, '0');
             const bln = namaBulan[d.getMonth()];
@@ -661,7 +663,6 @@
             return `${tgl} ${bln} ${thn}`;
         }
 
-        // Fallback jika format string berwujud YYYY-MM-DD
         const parts = String(dateStr).split("-");
         if (parts.length === 3) {
             const blnIdx = parseInt(parts[1], 10) - 1;
@@ -670,6 +671,17 @@
 
         return dateStr;
     }
+
+    async function saveEntry() {
+        const tgl = document.getElementById('inputTanggal').value;
+        const keg = document.getElementById('inputKegiatan').value;
+        const dok = document.getElementById('inputDokumen').value;
+        const fileInput = document.getElementById('inputGambar');
+
+        if(!tgl || !keg) {
+            alert('Silakan isi Tanggal dan Kegiatan!');
+            return;
+        }
 
         showLoading(true);
 
@@ -707,7 +719,18 @@
 
     function editEntry(index) {
         const item = entries[index];
-        document.getElementById('inputTanggal').value = item.tanggal;
+        
+        // Format nilai kembali ke YYYY-MM-DD agar masuk ke form type="date"
+        let tglValue = item.tanggal;
+        const d = new Date(item.tanggal);
+        if (!isNaN(d.getTime())) {
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            tglValue = `${yyyy}-${mm}-${dd}`;
+        }
+
+        document.getElementById('inputTanggal').value = tglValue;
         document.getElementById('inputKegiatan').value = item.kegiatan;
         document.getElementById('inputDokumen').value = item.dokumen;
         document.getElementById('existingGambar').value = item.gambar || "";
@@ -773,34 +796,28 @@
     if (rawSession) {
         try {
             const parsed = JSON.parse(rawSession);
-            // Kompatibel baik untuk format objek langsung maupun nested userData
             currentUser = parsed.userData ? parsed.userData : parsed;
-            
+
             if (currentUser && currentUser.email) {
-                // Langsung buka dashboard menggunakan data sesi yang tersimpan
                 initDashboard();
-                
-                // (Opsional di latar belakang) Validasi status akun tanpa langsung logout jika koneksi lambat
+
                 if (parsed.password) {
                     fetch(SCRIPT_URL, {
                         method: 'POST',
-                        body: JSON.stringify({ 
-                            action: "login", 
-                            email: currentUser.email, 
-                            password: parsed.password 
+                        body: JSON.stringify({
+                            action: "login",
+                            email: currentUser.email,
+                            password: parsed.password
                         })
                     })
                     .then(res => res.json())
                     .then(res => {
-                        // Hanya logout jika server secara tegas menolak (misal status diubah kembali ke PENDING)
                         if (res.status === "error") {
                             alert(res.message);
                             logout();
                         }
                     })
-                    .catch(() => {
-                        // Jika gagal terhubung / koneksi internet lambat, tetap izinkan membuka dashboard
-                    });
+                    .catch(() => {});
                 }
             } else {
                 logout();

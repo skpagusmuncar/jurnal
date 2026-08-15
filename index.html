@@ -756,33 +756,40 @@
         }
     }
 
-    // Auto-login dengan validasi ulang status ke Google Apps Script
+    // Auto-login yang stabil saat refresh halaman
     const rawSession = localStorage.getItem('userAksiSession');
     if (rawSession) {
         try {
-            const session = JSON.parse(rawSession);
-            const email = session.email || (session.userData && session.userData.email);
-            const pass = session.password;
-
-            if (email && pass) {
-                fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: "login", email: email, password: pass })
-                })
-                .then(res => res.json())
-                .then(res => {
-                    if (res.status === "success") {
-                        currentUser = res.user;
-                        initDashboard();
-                    } else {
-                        // Jika status akun PENDING atau ditolak, hapus sesi
-                        logout();
-                    }
-                })
-                .catch(() => {
-                    currentUser = session.userData || session;
-                    initDashboard();
-                });
+            const parsed = JSON.parse(rawSession);
+            // Kompatibel baik untuk format objek langsung maupun nested userData
+            currentUser = parsed.userData ? parsed.userData : parsed;
+            
+            if (currentUser && currentUser.email) {
+                // Langsung buka dashboard menggunakan data sesi yang tersimpan
+                initDashboard();
+                
+                // (Opsional di latar belakang) Validasi status akun tanpa langsung logout jika koneksi lambat
+                if (parsed.password) {
+                    fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ 
+                            action: "login", 
+                            email: currentUser.email, 
+                            password: parsed.password 
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(res => {
+                        // Hanya logout jika server secara tegas menolak (misal status diubah kembali ke PENDING)
+                        if (res.status === "error") {
+                            alert(res.message);
+                            logout();
+                        }
+                    })
+                    .catch(() => {
+                        // Jika gagal terhubung / koneksi internet lambat, tetap izinkan membuka dashboard
+                    });
+                }
             } else {
                 logout();
             }

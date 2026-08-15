@@ -226,7 +226,6 @@
                 font-family: "Times New Roman", Times, serif !important;
             }
             
-            /* Judul Laporan Dipertahankan Tetap Besar saat Dicetak */
             .doc-header h3 {
                 font-size: 13pt !important;
                 font-weight: bold !important;
@@ -239,7 +238,6 @@
                 color: #000000 !important;
             }
 
-            /* Ukuran Standar Isi Dokumen Laporan */
             .meta-table {
                 font-size: 10pt !important;
                 margin-bottom: 12pt !important;
@@ -395,7 +393,7 @@
             <h2 style="margin-bottom: 20px; text-align: center;">Login Pegawai</h2>
             <div class="form-group"><label>Email</label><input type="email" id="loginEmail"></div>
             <div class="form-group"><label>Password</label><input type="password" id="loginPassword"></div>
-            <button class="btn btn-primary" style="width: 100%; margin-top: 10px; padding: 10px;" onclick="submitLogin()">Masuk</button>
+            <button class="btn btn-primary" id="btnLoginBtn" style="width: 100%; margin-top: 10px; padding: 10px;" onclick="submitLogin()">Masuk</button>
             <button class="btn btn-outline" style="width: 100%; margin-top: 8px;" onclick="closeModal('modalLogin')">Tutup</button>
         </div>
     </div>
@@ -411,13 +409,13 @@
             <div class="form-group"><label>Jabatan</label><input type="text" id="regJabatan"></div>
             <div class="form-group"><label>Unit Kerja</label><input type="text" id="regUnit"></div>
             <div class="form-group"><label>Periode Penilaian</label><input type="text" id="regPeriode" value="2026"></div>
-            <button class="btn btn-primary" style="width: 100%; margin-top: 10px; padding: 10px;" onclick="submitRegister()">Daftar</button>
+            <button class="btn btn-primary" id="btnRegBtn" style="width: 100%; margin-top: 10px; padding: 10px;" onclick="submitRegister()">Daftar</button>
             <button class="btn btn-outline" style="width: 100%; margin-top: 8px;" onclick="closeModal('modalRegister')">Tutup</button>
         </div>
     </div>
 
 <script>
-    // GANTI SCRIPT_URL DI BAWAH INI DENGAN URL WEB APP DEPLOYMENT GOOGLE APPS SCRIPT ANDA
+    // URL WEB APP DEPLOYMENT GOOGLE APPS SCRIPT
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx58JJO7xYqUFyynSJJghTOSjVufygTiZD7j3ZIcBawVKLqL0tZAC6O4su_Yon-YraXmQ/exec";
 
     let currentUser = null;
@@ -428,10 +426,14 @@
     function showLoading(show) { document.getElementById('loadingStatus').style.display = show ? 'block' : 'none'; }
 
     function submitLogin() {
-        const email = document.getElementById('loginEmail').value;
+        const email = document.getElementById('loginEmail').value.trim();
         const pass = document.getElementById('loginPassword').value;
+        const btn = document.getElementById('btnLoginBtn');
 
         if (!email || !pass) return alert("Isi email dan password!");
+
+        btn.disabled = true;
+        btn.innerText = "Memeriksa...";
 
         fetch(SCRIPT_URL, {
             method: 'POST',
@@ -439,9 +441,15 @@
         })
         .then(res => res.json())
         .then(res => {
+            btn.disabled = false;
+            btn.innerText = "Masuk";
             if (res.status === "success") {
                 currentUser = res.user;
-                localStorage.setItem('userAksiSession', JSON.stringify(currentUser));
+                localStorage.setItem('userAksiSession', JSON.stringify({
+                    email: email,
+                    password: pass,
+                    userData: currentUser
+                }));
                 closeModal('modalLogin');
                 initDashboard();
             } else {
@@ -449,33 +457,51 @@
             }
         })
         .catch(err => {
+            btn.disabled = false;
+            btn.innerText = "Masuk";
             alert("Gagal terhubung ke peladen!");
         });
     }
 
     function submitRegister() {
+        const btn = document.getElementById('btnRegBtn');
         const payload = {
             action: "register",
-            email: document.getElementById('regEmail').value,
+            email: document.getElementById('regEmail').value.trim(),
             password: document.getElementById('regPassword').value,
-            nama: document.getElementById('regNama').value,
-            nip: document.getElementById('regNip').value,
-            jabatan: document.getElementById('regJabatan').value,
-            unit: document.getElementById('regUnit').value,
-            periode: document.getElementById('regPeriode').value
+            nama: document.getElementById('regNama').value.trim(),
+            nip: document.getElementById('regNip').value.trim(),
+            jabatan: document.getElementById('regJabatan').value.trim(),
+            unit: document.getElementById('regUnit').value.trim(),
+            periode: document.getElementById('regPeriode').value.trim()
         };
 
         if(!payload.email || !payload.password || !payload.nama) {
             return alert("Isi data pendaftaran secara lengkap!");
         }
 
+        btn.disabled = true;
+        btn.innerText = "Mendaftarkan...";
+
         fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) })
         .then(res => res.json())
         .then(res => {
+            btn.disabled = false;
+            btn.innerText = "Daftar";
             alert(res.message);
-            if (res.status === "success") closeModal('modalRegister');
+            if (res.status === "success") {
+                closeModal('modalRegister');
+                document.getElementById('regEmail').value = '';
+                document.getElementById('regPassword').value = '';
+                document.getElementById('regNama').value = '';
+                document.getElementById('regNip').value = '';
+                document.getElementById('regJabatan').value = '';
+                document.getElementById('regUnit').value = '';
+            }
         })
         .catch(err => {
+            btn.disabled = false;
+            btn.innerText = "Daftar";
             alert("Gagal mengirim data pendaftaran!");
         });
     }
@@ -487,6 +513,8 @@
         document.getElementById('landingPage').style.display = 'block';
         document.getElementById('navButtons').style.display = 'flex';
         document.getElementById('userInfo').style.display = 'none';
+        document.getElementById('loginEmail').value = '';
+        document.getElementById('loginPassword').value = '';
     }
 
     function initDashboard() {
@@ -516,7 +544,7 @@
         fetch(`${SCRIPT_URL}?action=getData&email=${encodeURIComponent(currentUser.email)}`)
             .then(res => res.json())
             .then(data => {
-                entries = data;
+                entries = Array.isArray(data) ? data : [];
                 renderTable();
                 showLoading(false);
             })
@@ -531,9 +559,9 @@
 
         entries.forEach((item, index) => {
             const tr = document.createElement('tr');
-            const formattedKegiatan = item.kegiatan.split('\n').map(line => {
+            const formattedKegiatan = item.kegiatan ? item.kegiatan.split('\n').map(line => {
                 return (line.toUpperCase() === line && line.trim() !== '') ? `<span class="text-bold">${line}</span>` : line;
-            }).join('<br>');
+            }).join('<br>') : '';
 
             const formattedDokumen = formatDokumenField(item.dokumen, item.gambar);
 
@@ -723,11 +751,42 @@
         }
     }
 
-    // Auto-login jika ada sesi tersimpan
-    const savedUser = localStorage.getItem('userAksiSession');
-    if (savedUser) {
-        currentUser = JSON.parse(savedUser);
-        initDashboard();
+    // Auto-login dengan validasi ulang status ke Google Apps Script
+    const rawSession = localStorage.getItem('userAksiSession');
+    if (rawSession) {
+        try {
+            const session = JSON.parse(rawSession);
+            // Validasi format sesi
+            const email = session.email || (session.userData && session.userData.email);
+            const pass = session.password;
+
+            if (email && pass) {
+                fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: "login", email: email, password: pass })
+                })
+                .then(res => res.json())
+                .then(res => {
+                    if (res.status === "success") {
+                        currentUser = res.user;
+                        initDashboard();
+                    } else {
+                        // Jika status akun PENDING atau diubah, paksa logout
+                        logout();
+                    }
+                })
+                .catch(() => {
+                    // Fallback jika offline
+                    currentUser = session.userData || session;
+                    initDashboard();
+                });
+            } else {
+                // Sesi lama tanpa credential password, bersihkan
+                logout();
+            }
+        } catch (e) {
+            logout();
+        }
     }
 </script>
 

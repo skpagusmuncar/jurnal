@@ -70,7 +70,7 @@
         .btn-warning { background: #d97706; color: white; }
         .btn-danger { background: #dc2626; color: white; }
 
-        /* MODAL FIX */
+        /* MODAL */
         .modal {
             display: none; 
             position: fixed; 
@@ -686,11 +686,23 @@
 
         displayedEntries = entries.filter(item => {
             if (!item.tanggal) return false;
-            const parts = item.tanggal.split('-'); // format: yyyy-mm-dd
-            if (parts.length < 3) return false;
 
-            const yyyy = parts[0];
-            const mm = parts[1];
+            let yyyy = '';
+            let mm = '';
+
+            const strTgl = String(item.tanggal).trim();
+            const parts = strTgl.split('-');
+
+            if (parts.length >= 3) {
+                yyyy = parts[0];
+                mm = parts[1].padStart(2, '0');
+            } else {
+                const d = new Date(item.tanggal);
+                if (!isNaN(d.getTime())) {
+                    yyyy = String(d.getFullYear());
+                    mm = String(d.getMonth() + 1).padStart(2, '0');
+                }
+            }
 
             const matchBulan = (selBulan === 'all') || (mm === selBulan);
             const matchTahun = (selTahun === 'all') || (yyyy === selTahun);

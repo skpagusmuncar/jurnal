@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Self Assessment - LaporAksi Digital</title>
+    <!-- Tag Style Dinamis untuk Orientasi Cetak (Portrait / Landscape) -->
+    <style id="printOrientationStyle">
+        @page { size: A4 portrait; margin: 15mm; }
+    </style>
     <style>
         :root {
             --primary: #1e293b;
@@ -42,7 +46,7 @@
         .btn-danger { background: #dc2626; color: white; }
 
         /* CONTAINER LAYOUT */
-        .app-container { max-width: 1350px; margin: 20px auto; display: grid; grid-template-columns: 430px 1fr; gap: 20px; padding: 0 20px; }
+        .app-container { max-width: 1400px; margin: 20px auto; display: grid; grid-template-columns: 430px 1fr; gap: 20px; padding: 0 20px; }
         .card { background: #ffffff; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         .form-group { margin-bottom: 12px; }
         label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; color: #475569; }
@@ -50,7 +54,7 @@
             width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.9rem;
         }
 
-        /* POINT CATEGORY BADGE / SELECT */
+        /* POINT CATEGORY SELECT */
         .select-category {
             background-color: #f1f5f9;
             border: 2px solid var(--accent);
@@ -128,7 +132,7 @@
             justify-content: center;
         }
 
-        /* DOCUMENT PREVIEW AREA (SESUAI GAMBAR LAMPIRAN) */
+        /* DOCUMENT PREVIEW AREA */
         .doc-preview { 
             background: #ffffff; 
             padding: 35px; 
@@ -221,7 +225,6 @@
             .doc-preview { box-shadow: none !important; padding: 0 !important; min-height: auto !important; }
             .content-table th { background-color: #c9e0ef !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .content-table th, .content-table td { border: 1pt solid #000 !important; padding: 6pt 8pt !important; }
-            @page { size: A4 portrait; margin: 15mm; }
         }
     </style>
 </head>
@@ -301,7 +304,7 @@
                 <button type="button" class="btn btn-warning" id="btnCancel" style="display:none;" onclick="cancelEdit()">Batal</button>
             </div>
 
-            <!-- FILTER CETAK BULAN & TAHUN -->
+            <!-- FILTER CETAK & ORIENTASI KERTAS -->
             <div class="filter-section">
                 <h2>Filter & Cetak Dokumen</h2>
                 <div class="filter-grid">
@@ -335,7 +338,17 @@
                         </select>
                     </div>
                 </div>
-                <button type="button" class="btn btn-success" style="width: 100%; padding: 10px;" onclick="printPDF()">🖨️ Cetak / Download PDF</button>
+
+                <!-- PILIHAN ORIENTASI CETAK -->
+                <div class="form-group">
+                    <label>Orientasi Kertas Cetak PDF</label>
+                    <select id="selectOrientation" onchange="changeOrientation()">
+                        <option value="portrait" selected>📄 Tegak (Portrait)</option>
+                        <option value="landscape">📑 Melebar (Landscape)</option>
+                    </select>
+                </div>
+
+                <button type="button" class="btn btn-success" style="width: 100%; padding: 10px; margin-top: 5px;" onclick="printPDF()">🖨️ Cetak / Download PDF</button>
             </div>
         </div>
 
@@ -383,7 +396,6 @@
         "Juli", "Agustus", "September", "Oktober", "November", "Desember"
     ];
 
-    // Inisialisasi Akun Sesi
     window.addEventListener('DOMContentLoaded', () => {
         const rawSession = localStorage.getItem('userAksiSession');
         if (!rawSession) {
@@ -427,6 +439,17 @@
         const selected = document.getElementById('selectPoint').value;
         document.getElementById('prevJudul').innerText = `SELF ASSESSMENT PREDIKAT KINERJA ${selected.toUpperCase()}`;
         applyFilterAndRender();
+    }
+
+    // Mengubah Orientasi Halaman Cetak (Portrait / Landscape)
+    function changeOrientation() {
+        const ori = document.getElementById('selectOrientation').value;
+        const styleTag = document.getElementById('printOrientationStyle');
+        if (ori === 'landscape') {
+            styleTag.innerHTML = `@page { size: A4 landscape; margin: 12mm; }`;
+        } else {
+            styleTag.innerHTML = `@page { size: A4 portrait; margin: 15mm; }`;
+        }
     }
 
     function handleFileSelection(inputElem) {
@@ -678,7 +701,7 @@
                 const parsed = JSON.parse(item.gambar);
                 if (Array.isArray(parsed)) currentEditImages = parsed;
                 else if (item.gambar) currentEditImages = [item.gambar];
-            } catch (e) {
+            } catch(e) {
                 if (item.gambar) currentEditImages = [item.gambar];
             }
         }
@@ -748,6 +771,8 @@
     }
 
     function printPDF() {
+        changeOrientation(); // Pastikan orientasi aktif diterapkan sebelum cetak
+        
         const images = document.querySelectorAll('.doc-img-item');
         let loadedImages = 0;
         const totalImages = images.length;

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+     <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -83,8 +83,21 @@
         .card { background: #ffffff; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         .form-group { margin-bottom: 12px; }
         label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; color: #475569; }
-        input[type="text"], input[type="password"], input[type="email"], input[type="date"], input[type="file"], textarea {
+        input[type="text"], input[type="password"], input[type="email"], input[type="date"], input[type="file"], textarea, select {
             width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.9rem;
+        }
+
+        /* SECTION FILTER CETAK */
+        .filter-section {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px dashed var(--border);
+        }
+        .filter-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
         }
 
         /* THUMBNAIL EDIT GAMBAR */
@@ -351,7 +364,42 @@
                     <button type="button" class="btn btn-warning" id="btnCancel" style="display:none;" onclick="cancelEdit()">Batal</button>
                 </div>
 
-                <button type="button" class="btn btn-success" style="width: 100%; margin-top: 15px; padding: 10px;" onclick="printPDF()">🖨️ Cetak / Download PDF</button>
+                <!-- OPSI FILTER CETAK PDF PER BULAN & TAHUN -->
+                <div class="filter-section">
+                    <h2>Filter & Cetak Dokumen</h2>
+                    <div class="filter-grid">
+                        <div class="form-group">
+                            <label>Bulan Laporan</label>
+                            <select id="filterBulan" onchange="applyFilterAndRender()">
+                                <option value="all">-- Semua Bulan --</option>
+                                <option value="01">Januari</option>
+                                <option value="02">Februari</option>
+                                <option value="03">Maret</option>
+                                <option value="04">April</option>
+                                <option value="05">Mei</option>
+                                <option value="06">Juni</option>
+                                <option value="07">Juli</option>
+                                <option value="08">Agustus</option>
+                                <option value="09">September</option>
+                                <option value="10">Oktober</option>
+                                <option value="11">November</option>
+                                <option value="12">Desember</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tahun Laporan</label>
+                            <select id="filterTahun" onchange="applyFilterAndRender()">
+                                <option value="all">-- Semua Tahun --</option>
+                                <option value="2024">2024</option>
+                                <option value="2025">2025</option>
+                                <option value="2026" selected>2026</option>
+                                <option value="2027">2027</option>
+                                <option value="2028">2028</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-success" style="width: 100%; padding: 10px;" onclick="printPDF()">🖨️ Cetak / Download PDF</button>
+                </div>
             </div>
 
             <!-- PREVIEW DOKUMEN LAPORAN -->
@@ -414,12 +462,18 @@
 
 <script>
     // URL WEB APP DEPLOYMENT GOOGLE APPS SCRIPT
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwNvwB2P7ceRthQp_UE7SaJDOZH4h6PQo2I1f5vymR-VJuL0B-GqV7y---og7S4_3y5yw/exec";
+    const SCRIPT_URL = " const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwNvwB2P7ceRthQp_UE7SaJDOZH4h6PQo2I1f5vymR-VJuL0B-GqV7y---og7S4_3y5yw/exec";";
 
     let currentUser = null;
     let entries = [];
+    let displayedEntries = [];
     let currentEditImages = [];
     let deletedImagesFromDrive = [];
+
+    const NAMA_BULAN = [
+        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+    ];
 
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
@@ -524,6 +578,18 @@
         document.getElementById('userInfo').style.display = 'flex';
         document.getElementById('userDisplayName').innerText = currentUser.nama;
 
+        // Set default filter bulan dan tahun sesuai tanggal sekarang
+        const now = new Date();
+        const curMonth = String(now.getMonth() + 1).padStart(2, '0');
+        const curYear = String(now.getFullYear());
+        
+        if (document.getElementById('filterBulan')) {
+            document.getElementById('filterBulan').value = curMonth;
+        }
+        if (document.getElementById('filterTahun')) {
+            document.getElementById('filterTahun').value = curYear;
+        }
+
         renderMeta();
         fetchUserEntries();
     }
@@ -536,7 +602,19 @@
         document.getElementById('prevNip').innerText = currentUser.nip;
         document.getElementById('prevJabatan').innerText = currentUser.jabatan;
         document.getElementById('prevUnit').innerText = currentUser.unit;
-        document.getElementById('prevPeriode').innerText = currentUser.periode;
+
+        // Tampilkan periode dinamis sesuai filter
+        const b = document.getElementById('filterBulan').value;
+        const y = document.getElementById('filterTahun').value;
+
+        if (b !== 'all' && y !== 'all') {
+            const bulanNama = NAMA_BULAN[parseInt(b, 10) - 1];
+            document.getElementById('prevPeriode').innerText = `${bulanNama} ${y}`;
+        } else if (y !== 'all') {
+            document.getElementById('prevPeriode').innerText = `Tahun ${y}`;
+        } else {
+            document.getElementById('prevPeriode').innerText = currentUser.periode || "-";
+        }
     }
 
     function fetchUserEntries() {
@@ -554,7 +632,7 @@
                 });
                 
                 entries = list;
-                renderTable();
+                applyFilterAndRender();
                 showLoading(false);
             })
             .catch(err => {
@@ -563,11 +641,38 @@
             });
     }
 
+    function applyFilterAndRender() {
+        const selBulan = document.getElementById('filterBulan').value;
+        const selTahun = document.getElementById('filterTahun').value;
+
+        displayedEntries = entries.filter(item => {
+            if (!item.tanggal) return false;
+            const parts = item.tanggal.split('-'); // format yyyy-mm-dd
+            if (parts.length < 3) return false;
+
+            const yyyy = parts[0];
+            const mm = parts[1];
+
+            const matchBulan = (selBulan === 'all') || (mm === selBulan);
+            const matchTahun = (selTahun === 'all') || (yyyy === selTahun);
+
+            return matchBulan && matchTahun;
+        });
+
+        renderMeta();
+        renderTable();
+    }
+
     function renderTable() {
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '';
 
-        entries.forEach((item, index) => {
+        if (displayedEntries.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 15px; color: #64748b;">Tidak ada data kegiatan pada periode yang dipilih.</td></tr>`;
+            return;
+        }
+
+        displayedEntries.forEach((item, index) => {
             const tr = document.createElement('tr');
             const formattedKegiatan = item.kegiatan ? item.kegiatan.split('\n').map(line => {
                 return (line.toUpperCase() === line && line.trim() !== '') ? `<span class="text-bold">${line}</span>` : line;
@@ -581,8 +686,8 @@
                 <td class="col-kegiatan">${formattedKegiatan}</td>
                 <td class="col-dokumen">${formattedDokumen}</td>
                 <td class="col-aksi" style="text-align:center;">
-                    <button class="btn btn-warning" onclick="editEntry(${index})">Edit</button>
-                    <button class="btn btn-danger" onclick="deleteEntry(${index})">Hapus</button>
+                    <button class="btn btn-warning" onclick="editEntryById('${item.id}')">Edit</button>
+                    <button class="btn btn-danger" onclick="deleteEntryById('${item.id}')">Hapus</button>
                 </td>
             `;
             tbody.appendChild(tr);
@@ -650,15 +755,10 @@
     function formatDateIndo(dateStr) {
         if (!dateStr) return "";
 
-        const namaBulan = [
-            "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-            "Juli", "Agustus", "September", "Oktober", "November", "Desember"
-        ];
-
         const d = new Date(dateStr);
         if (!isNaN(d.getTime())) {
             const tgl = String(d.getDate()).padStart(2, '0');
-            const bln = namaBulan[d.getMonth()];
+            const bln = NAMA_BULAN[d.getMonth()];
             const thn = d.getFullYear();
             return `${tgl} ${bln} ${thn}`;
         }
@@ -666,7 +766,7 @@
         const parts = String(dateStr).split("-");
         if (parts.length === 3) {
             const blnIdx = parseInt(parts[1], 10) - 1;
-            return `${parts[2].padStart(2, '0')} ${namaBulan[blnIdx] || parts[1]} ${parts[0]}`;
+            return `${parts[2].padStart(2, '0')} ${NAMA_BULAN[blnIdx] || parts[1]} ${parts[0]}`;
         }
 
         return dateStr;
@@ -718,8 +818,9 @@
         });
     }
 
-    function editEntry(index) {
-        const item = entries[index];
+    function editEntryById(id) {
+        const item = entries.find(e => e.id === id);
+        if (!item) return;
         
         let tglValue = item.tanggal;
         const d = new Date(item.tanggal);
@@ -738,7 +839,6 @@
         document.getElementById('formTitle').innerText = "Edit Baris Kegiatan";
         document.getElementById('btnSubmit').innerText = "✓ Update Data & Drive";
 
-        // Parse foto lama untuk ditampilkan thumbnail & tombol hapusnya
         currentEditImages = [];
         deletedImagesFromDrive = [];
         if (item.gambar) {
@@ -804,10 +904,10 @@
         document.getElementById('existingImagesContainer').innerHTML = '';
     }
 
-    function deleteEntry(index) {
+    function deleteEntryById(id) {
         if (confirm("Hapus baris laporan ini beserta semua foto terkait di Google Drive?")) {
             showLoading(true);
-            fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "delete", id: entries[index].id }) })
+            fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "delete", id: id }) })
             .then(res => res.json())
             .then(res => fetchUserEntries());
         }
@@ -847,7 +947,7 @@
         }
     }
 
-    // Auto-login yang stabil saat refresh halaman
+    // Auto-login saat refresh halaman
     const rawSession = localStorage.getItem('userAksiSession');
     if (rawSession) {
         try {

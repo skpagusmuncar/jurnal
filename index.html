@@ -109,6 +109,31 @@
             width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.9rem;
         }
 
+        /* UPLOAD BUTTONS GROUP */
+        .photo-upload-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 5px;
+        }
+        .btn-upload-choice {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: #f1f5f9;
+            border: 1px solid var(--border);
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: #334155;
+        }
+        .btn-upload-choice:hover {
+            background: #e2e8f0;
+        }
+
         /* FILTER CETAK PER BULAN & TAHUN */
         .filter-section {
             margin-top: 20px;
@@ -375,10 +400,23 @@
                     <div class="edit-img-preview-group" id="existingImagesContainer"></div>
                 </div>
 
+                <!-- OPSI DUA TOMBOL: DARI KAMERA HP & DARI FILE -->
                 <div class="form-group">
-                    <label id="uploadLabel">Upload Foto Baru (Opsional)</label>
-                    <input type="file" id="inputGambar" accept="image/*" multiple>
-                    <small style="color:#64748b; font-size:0.75rem;">Bisa pilih lebih dari 1 foto sekaligus</small>
+                    <label id="uploadLabel">Foto Kegiatan (Kamera Langsung / File Galeri)</label>
+                    
+                    <div class="photo-upload-grid">
+                        <label class="btn-upload-choice">
+                            📷 Buka Kamera
+                            <input type="file" id="inputKamera" accept="image/*" capture="environment" style="display:none;" onchange="handleFileSelection(this)">
+                        </label>
+                        <label class="btn-upload-choice">
+                            📁 Pilih File Galeri
+                            <input type="file" id="inputGambar" accept="image/*" multiple style="display:none;" onchange="handleFileSelection(this)">
+                        </label>
+                    </div>
+
+                    <div id="selectedFilesSummary" style="font-size:0.8rem; color:#2563eb; margin-top:6px; font-weight:600;"></div>
+                    <small style="color:#64748b; font-size:0.75rem;">Bisa ambil foto lewat kamera atau pilih banyak foto dari galeri HP.</small>
                 </div>
                 
                 <div style="display: flex; gap: 8px; margin-top: 10px;">
@@ -491,6 +529,7 @@
     let displayedEntries = [];
     let currentEditImages = [];
     let deletedImagesFromDrive = [];
+    let pendingUploadFiles = []; // Penampung foto dari kamera & galeri
 
     const NAMA_BULAN = [
         "Januari", "Februari", "Maret", "April", "Mei", "Juni",
@@ -516,6 +555,26 @@
     function showLoading(show) { 
         const el = document.getElementById('loadingStatus');
         if (el) el.style.display = show ? 'block' : 'none'; 
+    }
+
+    // Menangani upload dari input Kamera atau Galeri
+    function handleFileSelection(inputElem) {
+        if (inputElem.files && inputElem.files.length > 0) {
+            for (let i = 0; i < inputElem.files.length; i++) {
+                pendingUploadFiles.push(inputElem.files[i]);
+            }
+            updateFilesSummary();
+        }
+        inputElem.value = ''; // Reset input agar bisa dipakai berulang kali
+    }
+
+    function updateFilesSummary() {
+        const summary = document.getElementById('selectedFilesSummary');
+        if (pendingUploadFiles.length > 0) {
+            summary.innerHTML = `✓ ${pendingUploadFiles.length} foto baru siap diunggah`;
+        } else {
+            summary.innerHTML = '';
+        }
     }
 
     function submitLogin() {
@@ -827,7 +886,6 @@
         const tgl = document.getElementById('inputTanggal').value;
         const keg = document.getElementById('inputKegiatan').value;
         const dok = document.getElementById('inputDokumen').value;
-        const fileInput = document.getElementById('inputGambar');
 
         if(!tgl || !keg) {
             alert('Silakan isi Tanggal dan Kegiatan!');
@@ -837,9 +895,9 @@
         showLoading(true);
 
         let base64Photos = [];
-        if (fileInput.files.length > 0) {
+        if (pendingUploadFiles.length > 0) {
             try {
-                base64Photos = await processFiles(fileInput.files);
+                base64Photos = await processFiles(pendingUploadFiles);
             } catch (e) {
                 console.error("Gagal membaca file gambar", e);
             }
@@ -892,6 +950,9 @@
 
         currentEditImages = [];
         deletedImagesFromDrive = [];
+        pendingUploadFiles = [];
+        updateFilesSummary();
+
         if (item.gambar) {
             try {
                 const parsed = JSON.parse(item.gambar);
@@ -943,6 +1004,7 @@
         document.getElementById('inputTanggal').value = '';
         document.getElementById('inputKegiatan').value = '';
         document.getElementById('inputDokumen').value = '';
+        document.getElementById('inputKamera').value = '';
         document.getElementById('inputGambar').value = '';
         document.getElementById('editId').value = '-1';
         document.getElementById('btnCancel').style.display = 'none';
@@ -951,6 +1013,9 @@
         
         currentEditImages = [];
         deletedImagesFromDrive = [];
+        pendingUploadFiles = [];
+        updateFilesSummary();
+
         document.getElementById('existingImagesWrapper').style.display = 'none';
         document.getElementById('existingImagesContainer').innerHTML = '';
     }

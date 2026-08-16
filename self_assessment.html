@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Self Assessment - LaporAksi Digital</title>
+    <style>
+        :root {
+            --primary: #1e293b;
+            --accent: #2563eb;
+            --bg: #f8fafc;
+            --border: #cbd5e1;
+            --table-header-bg: #b9d7ea;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { background-color: var(--bg); color: #334155; }
+
+        /* NAVBAR */
+        .navbar {
+            background: #ffffff; 
+            padding: 12px 25px; 
+            display: flex; 
+            justify-content: space-between;
+            align-items: center; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+            position: sticky; 
+            top: 0; 
+            z-index: 10;
+        }
+        .brand { font-size: 1.25rem; font-weight: bold; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+        .nav-btn-group { display: flex; gap: 10px; align-items: center; }
+
+        /* BUTTONS */
+        .btn { padding: 8px 16px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; text-decoration: none; display: inline-block; text-align: center; font-size: 0.85rem; }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .btn-outline { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
+        .btn-outline:hover { background: #eff6ff; }
+        .btn-success { background: #16a34a; color: white; }
+        .btn-warning { background: #d97706; color: white; }
+        .btn-danger { background: #dc2626; color: white; }
+
+        /* CONTAINER LAYOUT */
+        .app-container { max-width: 1350px; margin: 20px auto; display: grid; grid-template-columns: 430px 1fr; gap: 20px; padding: 0 20px; }
+        .card { background: #ffffff; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 12px; }
+        label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; color: #475569; }
+        input[type="text"], input[type="date"], select, textarea {
+            width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.9rem;
+        }
+
+        /* POINT CATEGORY BADGE / SELECT */
+        .select-category {
+            background-color: #f1f5f9;
+            border: 2px solid var(--accent);
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* PHOTO UPLOAD */
+        .photo-upload-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 5px;
+        }
+        .btn-upload-choice {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: #f1f5f9;
+            border: 1px solid var(--border);
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: #334155;
+        }
+        .btn-upload-choice:hover { background: #e2e8f0; }
+
+        /* FILTER SECTION */
+        .filter-section {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px dashed var(--border);
+        }
+        .filter-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        /* THUMBNAIL EDIT GAMBAR */
+        .edit-img-preview-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .edit-img-thumb {
+            position: relative;
+            width: 75px;
+            height: 75px;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #cbd5e1;
+        }
+        .edit-img-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .edit-img-delete-btn {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: rgba(220, 38, 38, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* DOCUMENT PREVIEW AREA (SESUAI GAMBAR LAMPIRAN) */
+        .doc-preview { 
+            background: #ffffff; 
+            padding: 35px; 
+            min-height: 297mm; 
+            box-shadow: 0 0 10px rgba(0,0,0,0.08); 
+            overflow-x: auto; 
+            font-family: Arial, sans-serif;
+            color: #000;
+        }
+        
+        .doc-header { 
+            text-align: center; 
+            margin-bottom: 25px; 
+        }
+        .doc-header h3 { 
+            font-size: 13pt; 
+            font-weight: bold; 
+            letter-spacing: 0.5px;
+            text-transform: uppercase; 
+        }
+
+        .meta-table { 
+            width: 100%; 
+            margin-bottom: 20px; 
+            font-size: 10.5pt; 
+            border-collapse: collapse; 
+        }
+        .meta-table td { padding: 3px 0; vertical-align: top; }
+        .meta-table td.label { width: 170px; }
+        .meta-table td.colon { width: 20px; }
+        .meta-table td.value { font-weight: normal; }
+
+        /* TABEL SELF ASSESSMENT */
+        .content-table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            font-size: 10pt; 
+        }
+        .content-table th, .content-table td { 
+            border: 1px solid #000; 
+            padding: 8px 10px; 
+            vertical-align: top; 
+        }
+        .content-table th { 
+            background-color: var(--table-header-bg); 
+            text-align: center; 
+            font-weight: bold; 
+            color: #000;
+        }
+
+        .content-table td.col-no { text-align: center; width: 45px; }
+        .content-table td.col-uraian { width: 35%; line-height: 1.45; }
+        .content-table td.col-pendukung { width: 55%; line-height: 1.45; word-break: break-word; }
+
+        .image-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .doc-img-item {
+            max-width: calc(50% - 4px);
+            max-height: 160px;
+            object-fit: cover;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+        }
+        .doc-link { color: #2563eb; text-decoration: underline; }
+
+        #loadingStatus { font-size: 0.85rem; color: #d97706; font-weight: bold; margin-bottom: 10px; display: none; }
+
+        /* RESPONSIF */
+        @media (max-width: 820px) {
+            .app-container { grid-template-columns: 1fr; padding: 0 10px; }
+        }
+
+        /* PRINT STYLING */
+        @media print {
+            body { 
+                background: white !important; 
+                padding: 0 !important; 
+                margin: 0 !important;
+                color: #000000 !important;
+                font-family: Arial, sans-serif !important;
+            }
+            .no-print, .col-aksi, th.col-aksi, td.col-aksi, .navbar { 
+                display: none !important; 
+            }
+            .app-container { display: block !important; padding: 0 !important; margin: 0 !important; }
+            .doc-preview { box-shadow: none !important; padding: 0 !important; min-height: auto !important; }
+            .content-table th { background-color: #c9e0ef !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .content-table th, .content-table td { border: 1pt solid #000 !important; padding: 6pt 8pt !important; }
+            @page { size: A4 portrait; margin: 15mm; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a href="index.html" class="brand">📝 Self Assessment ASN</a>
+        <div class="nav-btn-group">
+            <a href="index.html" class="btn btn-outline">📋 Jurnal Harian</a>
+            <span id="userDisplayName" style="font-weight: bold; color: var(--primary); margin-left: 8px;"></span>
+            <button type="button" class="btn btn-danger" onclick="logout()">Keluar</button>
+        </div>
+    </nav>
+
+    <div class="app-container">
+        <!-- FORM PANEL INPUT -->
+        <div class="card no-print">
+            <h2>Pilih Poin Self Assessment</h2>
+            
+            <div class="form-group" style="margin-top: 10px;">
+                <label>7 Poin Core Values ASN BerAKHLAK:</label>
+                <select id="selectPoint" class="select-category" onchange="onPointChange()">
+                    <option value="ADAPTIF">1. Adaptif</option>
+                    <option value="AKUNTABEL">2. Akuntabel</option>
+                    <option value="BERORIENTASI LAYANAN">3. Berorientasi Layanan</option>
+                    <option value="HARMONIS">4. Harmonis</option>
+                    <option value="KOLABORATIF">5. Kolaboratif</option>
+                    <option value="KOMPETEN">6. Kompeten</option>
+                    <option value="LOYAL">7. Loyal</option>
+                </select>
+            </div>
+
+            <h3 id="formTitle" style="margin-top: 20px; font-size: 1.05rem; border-top: 1px solid var(--border); padding-top: 12px;">Tambah Butir Self Assessment</h3>
+            <div id="loadingStatus">⏳ Memproses data ke Google Sheets...</div>
+            <input type="hidden" id="editId" value="-1">
+
+            <div class="form-group">
+                <label>Tanggal Pelaksanaan</label>
+                <input type="date" id="inputTanggal">
+            </div>
+
+            <div class="form-group">
+                <label>Uraian Kegiatan</label>
+                <textarea id="inputKegiatan" rows="3" placeholder="Contoh: Inovasi: Pengembangan dan Penyempurnaan Sistem Monitoring & Evaluasi Digital (kodi.web.id)"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Pendukung (Deskripsi Detail / Teks / Link Drive)</label>
+                <textarea id="inputPendukung" rows="5" placeholder="1. Deskripsi Umum&#10;Platform ini merupakan portal khusus...&#10;Tautan: https://drive.google.com/..."></textarea>
+            </div>
+
+            <!-- PREVIEW THUMBNAIL SAAT EDIT -->
+            <div class="form-group" id="existingImagesWrapper" style="display:none;">
+                <label>Foto Tersimpan Saat Ini (Klik ✕ untuk hapus):</label>
+                <div class="edit-img-preview-group" id="existingImagesContainer"></div>
+            </div>
+
+            <!-- FOTO BUKTI DUKUNG -->
+            <div class="form-group">
+                <label>Foto Bukti Kegiatan (Kamera / Galeri)</label>
+                <div class="photo-upload-grid">
+                    <label class="btn-upload-choice">
+                        📷 Kamera
+                        <input type="file" id="inputKamera" accept="image/*" capture="environment" style="display:none;" onchange="handleFileSelection(this)">
+                    </label>
+                    <label class="btn-upload-choice">
+                        📁 Galeri HP/PC
+                        <input type="file" id="inputGambar" accept="image/*" multiple style="display:none;" onchange="handleFileSelection(this)">
+                    </label>
+                </div>
+                <div id="selectedFilesSummary" style="font-size:0.8rem; color:#2563eb; margin-top:6px; font-weight:600;"></div>
+            </div>
+
+            <div style="display: flex; gap: 8px; margin-top: 15px;">
+                <button type="button" class="btn btn-primary" id="btnSubmit" style="flex:1;" onclick="saveEntry()">+ Simpan ke Database</button>
+                <button type="button" class="btn btn-warning" id="btnCancel" style="display:none;" onclick="cancelEdit()">Batal</button>
+            </div>
+
+            <!-- FILTER CETAK BULAN & TAHUN -->
+            <div class="filter-section">
+                <h2>Filter & Cetak Dokumen</h2>
+                <div class="filter-grid">
+                    <div class="form-group">
+                        <label>Bulan Laporan</label>
+                        <select id="filterBulan" onchange="applyFilterAndRender()">
+                            <option value="all">-- Semua Bulan --</option>
+                            <option value="01">Januari</option>
+                            <option value="02">Februari</option>
+                            <option value="03">Maret</option>
+                            <option value="04">April</option>
+                            <option value="05">Mei</option>
+                            <option value="06">Juni</option>
+                            <option value="07">Juli</option>
+                            <option value="08">Agustus</option>
+                            <option value="09">September</option>
+                            <option value="10">Oktober</option>
+                            <option value="11">November</option>
+                            <option value="12">Desember</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tahun Laporan</label>
+                        <select id="filterTahun" onchange="applyFilterAndRender()">
+                            <option value="all">-- Semua Tahun --</option>
+                            <option value="2024">2024</option>
+                            <option value="2025">2025</option>
+                            <option value="2026">2026</option>
+                            <option value="2027">2027</option>
+                            <option value="2028">2028</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-success" style="width: 100%; padding: 10px;" onclick="printPDF()">🖨️ Cetak / Download PDF</button>
+            </div>
+        </div>
+
+        <!-- DOKUMEN CETAK & PREVIEW FORMAT LAMPIRAN -->
+        <div class="doc-preview">
+            <div class="doc-header">
+                <h3 id="prevJudul">SELF ASSESSMENT PREDIKAT KINERJA ADAPTIF</h3>
+            </div>
+
+            <table class="meta-table">
+                <tr><td class="label">Nama</td><td class="colon">:</td><td class="value" id="prevNama">-</td></tr>
+                <tr><td class="label">NIP</td><td class="colon">:</td><td class="value" id="prevNip">-</td></tr>
+                <tr><td class="label">Jabatan</td><td class="colon">:</td><td class="value" id="prevJabatan">-</td></tr>
+                <tr><td class="label">Unit Kerja</td><td class="colon">:</td><td class="value" id="prevUnit">-</td></tr>
+                <tr><td class="label">Periode Penilaian</td><td class="colon">:</td><td class="value" id="prevPeriode">-</td></tr>
+            </table>
+
+            <table class="content-table">
+                <thead>
+                    <tr>
+                        <th class="col-no">No</th>
+                        <th class="col-uraian">Uraian Kegiatan</th>
+                        <th class="col-pendukung">Pendukung (Uraian kegiatan & Foto Bukti Kegiatan)</th>
+                        <th class="col-aksi no-print" style="width: 70px;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+<script>
+    // URL Google Apps Script yang sama dengan index.html
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwNvwB2P7ceRthQp_UE7SaJDOZH4h6PQo2I1f5vymR-VJuL0B-GqV7y---og7S4_3y5yw/exec";
+
+    let currentUser = null;
+    let allEntries = [];
+    let displayedEntries = [];
+    let currentEditImages = [];
+    let deletedImagesFromDrive = [];
+    let pendingUploadFiles = [];
+
+    const NAMA_BULAN = [
+        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+    ];
+
+    // Inisialisasi Akun Sesi
+    window.addEventListener('DOMContentLoaded', () => {
+        const rawSession = localStorage.getItem('userAksiSession');
+        if (!rawSession) {
+            alert("Silakan login terlebih dahulu melalui halaman utama!");
+            window.location.href = "index.html";
+            return;
+        }
+
+        try {
+            const parsed = JSON.parse(rawSession);
+            currentUser = parsed.userData ? parsed.userData : parsed;
+            if (!currentUser || !currentUser.email) {
+                window.location.href = "index.html";
+                return;
+            }
+
+            document.getElementById('userDisplayName').innerText = currentUser.nama;
+
+            // Default filter ke bulan & tahun sekarang
+            const now = new Date();
+            document.getElementById('filterBulan').value = String(now.getMonth() + 1).padStart(2, '0');
+            document.getElementById('filterTahun').value = String(now.getFullYear());
+
+            onPointChange();
+            fetchEntries();
+        } catch (e) {
+            window.location.href = "index.html";
+        }
+    });
+
+    function logout() {
+        localStorage.removeItem('userAksiSession');
+        window.location.href = "index.html";
+    }
+
+    function showLoading(show) {
+        document.getElementById('loadingStatus').style.display = show ? 'block' : 'none';
+    }
+
+    function onPointChange() {
+        const selected = document.getElementById('selectPoint').value;
+        document.getElementById('prevJudul').innerText = `SELF ASSESSMENT PREDIKAT KINERJA ${selected.toUpperCase()}`;
+        applyFilterAndRender();
+    }
+
+    function handleFileSelection(inputElem) {
+        if (inputElem.files && inputElem.files.length > 0) {
+            for (let i = 0; i < inputElem.files.length; i++) {
+                pendingUploadFiles.push(inputElem.files[i]);
+            }
+            updateFilesSummary();
+        }
+        inputElem.value = '';
+    }
+
+    function updateFilesSummary() {
+        const summary = document.getElementById('selectedFilesSummary');
+        if (pendingUploadFiles.length > 0) {
+            summary.innerHTML = `✓ ${pendingUploadFiles.length} foto baru siap diunggah`;
+        } else {
+            summary.innerHTML = '';
+        }
+    }
+
+    function renderMeta() {
+        if (!currentUser) return;
+        document.getElementById('prevNama').innerText = currentUser.nama;
+        document.getElementById('prevNip').innerText = currentUser.nip;
+        document.getElementById('prevJabatan').innerText = currentUser.jabatan;
+        document.getElementById('prevUnit').innerText = currentUser.unit;
+
+        const b = document.getElementById('filterBulan').value;
+        const y = document.getElementById('filterTahun').value;
+
+        if (b !== 'all' && y !== 'all') {
+            const bulanNama = NAMA_BULAN[parseInt(b, 10) - 1];
+            document.getElementById('prevPeriode').innerText = `${bulanNama} ${y}`;
+        } else if (y !== 'all') {
+            document.getElementById('prevPeriode').innerText = `Tahun ${y}`;
+        } else {
+            document.getElementById('prevPeriode').innerText = currentUser.periode || "-";
+        }
+    }
+
+    function fetchEntries() {
+        showLoading(true);
+        fetch(`${SCRIPT_URL}?action=getSelfAssessment&email=${encodeURIComponent(currentUser.email)}`)
+            .then(res => res.json())
+            .then(data => {
+                let list = Array.isArray(data) ? data : [];
+                list.sort((a, b) => new Date(a.tanggal).getTime() - new Date(b.tanggal).getTime());
+                allEntries = list;
+                applyFilterAndRender();
+                showLoading(false);
+            })
+            .catch(err => {
+                console.error("Gagal mengambil data self assessment:", err);
+                showLoading(false);
+            });
+    }
+
+    function applyFilterAndRender() {
+        const selPoint = document.getElementById('selectPoint').value;
+        const selBulan = document.getElementById('filterBulan').value;
+        const selTahun = document.getElementById('filterTahun').value;
+
+        displayedEntries = allEntries.filter(item => {
+            if (item.kategori !== selPoint) return false;
+            if (!item.tanggal) return false;
+
+            let yyyy = '', mm = '';
+            const strTgl = String(item.tanggal).trim();
+            const parts = strTgl.split('-');
+
+            if (parts.length >= 3) {
+                yyyy = parts[0];
+                mm = parts[1].padStart(2, '0');
+            } else {
+                const d = new Date(item.tanggal);
+                if (!isNaN(d.getTime())) {
+                    yyyy = String(d.getFullYear());
+                    mm = String(d.getMonth() + 1).padStart(2, '0');
+                }
+            }
+
+            const matchBulan = (selBulan === 'all') || (mm === selBulan);
+            const matchTahun = (selTahun === 'all') || (yyyy === selTahun);
+            return matchBulan && matchTahun;
+        });
+
+        renderMeta();
+        renderTable();
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+
+        if (displayedEntries.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 20px; color: #64748b;">Belum ada data untuk poin ini pada periode yang dipilih.</td></tr>`;
+            return;
+        }
+
+        displayedEntries.forEach((item, index) => {
+            const tr = document.createElement('tr');
+            const formattedUraian = (item.kegiatan || '').replace(/\n/g, '<br>');
+            const formattedPendukung = formatPendukungField(item.pendukung, item.gambar);
+
+            tr.innerHTML = `
+                <td class="col-no">${index + 1}</td>
+                <td class="col-uraian"><strong>${formattedUraian}</strong></td>
+                <td class="col-pendukung">${formattedPendukung}</td>
+                <td class="col-aksi no-print" style="text-align:center;">
+                    <button type="button" class="btn btn-warning" style="padding: 4px 8px; font-size: 0.75rem; margin-bottom: 4px;" onclick="editEntryById('${item.id}')">Edit</button><br>
+                    <button type="button" class="btn btn-danger" style="padding: 4px 8px; font-size: 0.75rem;" onclick="deleteEntryById('${item.id}')">Hapus</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function convertDriveUrlToDirectImage(url) {
+        if (!url) return "";
+        const match = String(url).match(/\/d\/([a-zA-Z0-9_-]+)/) || String(url).match(/id=([a-zA-Z0-9_-]+)/);
+        return match ? `https://lh3.googleusercontent.com/d/${match[1]}` : url;
+    }
+
+    function extractAllDriveLinks(text) {
+        if (!text) return [];
+        const regex = /(https?:\/\/drive\.google\.com\/[^\s]+)/g;
+        const matches = text.match(regex);
+        if (!matches) return [];
+        return matches.map(url => convertDriveUrlToDirectImage(url));
+    }
+
+    function formatPendukungField(text, gambarJson) {
+        if (!text) text = "";
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        let formattedText = text.replace(urlRegex, url => `<a href="${url}" target="_blank" class="doc-link">${url}</a>`).replace(/\n/g, '<br>');
+
+        let allImages = extractAllDriveLinks(text);
+
+        if (gambarJson) {
+            try {
+                const parsed = JSON.parse(gambarJson);
+                if (Array.isArray(parsed)) allImages = allImages.concat(parsed);
+                else if (gambarJson) allImages.push(gambarJson);
+            } catch (e) {
+                if (gambarJson) allImages.push(gambarJson);
+            }
+        }
+
+        if (allImages.length > 0) {
+            formattedText += `<div class="image-gallery">`;
+            allImages.forEach(imgUrl => {
+                if (imgUrl) {
+                    formattedText += `<img src="${convertDriveUrlToDirectImage(imgUrl)}" class="doc-img-item" crossorigin="anonymous" loading="eager" alt="Bukti Kegiatan">`;
+                }
+            });
+            formattedText += `</div>`;
+        }
+        return formattedText;
+    }
+
+    function processFiles(files) {
+        return Promise.all(Array.from(files).map(file => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = e => resolve(e.target.result);
+                reader.onerror = err => reject(err);
+                reader.readAsDataURL(file);
+            });
+        }));
+    }
+
+    async function saveEntry() {
+        const point = document.getElementById('selectPoint').value;
+        const tgl = document.getElementById('inputTanggal').value;
+        const keg = document.getElementById('inputKegiatan').value;
+        const pend = document.getElementById('inputPendukung').value;
+
+        if (!tgl || !keg) {
+            alert('Silakan isi Tanggal dan Uraian Kegiatan!');
+            return;
+        }
+
+        showLoading(true);
+
+        let base64Photos = [];
+        if (pendingUploadFiles.length > 0) {
+            try {
+                base64Photos = await processFiles(pendingUploadFiles);
+            } catch (e) {
+                console.error("Gagal membaca file gambar", e);
+            }
+        }
+
+        const payload = {
+            action: document.getElementById('editId').value === "-1" ? "addSelfAssessment" : "editSelfAssessment",
+            id: document.getElementById('editId').value,
+            userEmail: currentUser.email,
+            kategori: point,
+            tanggal: tgl,
+            kegiatan: keg,
+            pendukung: pend,
+            gambarBase64Array: base64Photos,
+            existingGambar: JSON.stringify(currentEditImages),
+            deletedGambarUrls: deletedImagesFromDrive
+        };
+
+        fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) })
+        .then(res => res.json())
+        .then(res => {
+            cancelEdit();
+            fetchEntries();
+        })
+        .catch(err => {
+            alert("Gagal menyimpan ke Google Sheets!");
+            showLoading(false);
+        });
+    }
+
+    function editEntryById(id) {
+        const item = allEntries.find(e => e.id === id);
+        if (!item) return;
+
+        let tglValue = item.tanggal;
+        const d = new Date(item.tanggal);
+        if (!isNaN(d.getTime())) {
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            tglValue = `${yyyy}-${mm}-${dd}`;
+        }
+
+        document.getElementById('selectPoint').value = item.kategori;
+        document.getElementById('inputTanggal').value = tglValue;
+        document.getElementById('inputKegiatan').value = item.kegiatan;
+        document.getElementById('inputPendukung').value = item.pendukung;
+        document.getElementById('editId').value = item.id;
+        document.getElementById('btnCancel').style.display = 'inline-block';
+        document.getElementById('formTitle').innerText = "Edit Butir Self Assessment";
+        document.getElementById('btnSubmit').innerText = "✓ Update Data";
+
+        currentEditImages = [];
+        deletedImagesFromDrive = [];
+        pendingUploadFiles = [];
+        updateFilesSummary();
+
+        if (item.gambar) {
+            try {
+                const parsed = JSON.parse(item.gambar);
+                if (Array.isArray(parsed)) currentEditImages = parsed;
+                else if (item.gambar) currentEditImages = [item.gambar];
+            } catch (e) {
+                if (item.gambar) currentEditImages = [item.gambar];
+            }
+        }
+        renderEditThumbnails();
+        onPointChange();
+    }
+
+    function renderEditThumbnails() {
+        const container = document.getElementById('existingImagesContainer');
+        const wrapper = document.getElementById('existingImagesWrapper');
+
+        if (currentEditImages.length === 0) {
+            wrapper.style.display = 'none';
+            container.innerHTML = '';
+            return;
+        }
+
+        wrapper.style.display = 'block';
+        container.innerHTML = '';
+
+        currentEditImages.forEach((url, idx) => {
+            const thumb = document.createElement('div');
+            thumb.className = 'edit-img-thumb';
+            thumb.innerHTML = `
+                <img src="${convertDriveUrlToDirectImage(url)}" alt="Thumbnail">
+                <button type="button" class="edit-img-delete-btn" title="Hapus foto" onclick="removeImageFromEdit(${idx})">✕</button>
+            `;
+            container.appendChild(thumb);
+        });
+    }
+
+    function removeImageFromEdit(index) {
+        if (confirm("Hapus foto ini?")) {
+            const removedUrl = currentEditImages.splice(index, 1)[0];
+            if (removedUrl) deletedImagesFromDrive.push(removedUrl);
+            renderEditThumbnails();
+        }
+    }
+
+    function cancelEdit() {
+        document.getElementById('inputTanggal').value = '';
+        document.getElementById('inputKegiatan').value = '';
+        document.getElementById('inputPendukung').value = '';
+        document.getElementById('inputKamera').value = '';
+        document.getElementById('inputGambar').value = '';
+        document.getElementById('editId').value = '-1';
+        document.getElementById('btnCancel').style.display = 'none';
+        document.getElementById('formTitle').innerText = "Tambah Butir Self Assessment";
+        document.getElementById('btnSubmit').innerText = "+ Simpan ke Database";
+
+        currentEditImages = [];
+        deletedImagesFromDrive = [];
+        pendingUploadFiles = [];
+        updateFilesSummary();
+
+        document.getElementById('existingImagesWrapper').style.display = 'none';
+        document.getElementById('existingImagesContainer').innerHTML = '';
+    }
+
+    function deleteEntryById(id) {
+        if (confirm("Hapus baris self assessment ini?")) {
+            showLoading(true);
+            fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "deleteSelfAssessment", id: id }) })
+            .then(res => res.json())
+            .then(res => fetchEntries());
+        }
+    }
+
+    function printPDF() {
+        const images = document.querySelectorAll('.doc-img-item');
+        let loadedImages = 0;
+        const totalImages = images.length;
+
+        if (totalImages === 0) {
+            window.print();
+            return;
+        }
+
+        showLoading(true);
+        images.forEach(img => {
+            if (img.complete) {
+                loadedImages++;
+                if (loadedImages === totalImages) triggerPrint();
+            } else {
+                img.onload = img.onerror = () => {
+                    loadedImages++;
+                    if (loadedImages === totalImages) triggerPrint();
+                };
+            }
+        });
+
+        function triggerPrint() {
+            showLoading(false);
+            window.print();
+        }
+    }
+</script>
+</body>
+</html>

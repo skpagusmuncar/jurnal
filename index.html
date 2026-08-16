@@ -64,6 +64,7 @@
         .btn-primary { background: var(--accent); color: white; }
         .btn-primary:hover { background: #1d4ed8; }
         .btn-outline { background: transparent; border: 2px solid var(--accent); color: var(--accent); }
+        .btn-outline:hover { background: #eff6ff; }
         .btn-outline-light { background: transparent; border: 2px solid #ffffff; color: white; }
         .btn-outline-light:hover { background: rgba(255, 255, 255, 0.15); }
         .btn-success { background: #16a34a; color: white; }
@@ -328,7 +329,10 @@
             <button type="button" class="btn btn-primary" onclick="openModal('modalRegister')">Daftar Akun</button>
         </div>
         <div id="userInfo" style="display: none; align-items: center; justify-content: space-between; width: 100%;">
-            <span id="userDisplayName" style="font-weight: bold; color: var(--primary);"></span>
+            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                <span id="userDisplayName" style="font-weight: bold; color: var(--primary);"></span>
+                <a href="self_assessment.html" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.85rem;">📝 Isi Self Assessment</a>
+            </div>
             <button type="button" class="btn btn-danger" onclick="logout()">Keluar</button>
         </div>
     </nav>
@@ -529,7 +533,7 @@
     let displayedEntries = [];
     let currentEditImages = [];
     let deletedImagesFromDrive = [];
-    let pendingUploadFiles = []; // Penampung foto dari kamera & galeri
+    let pendingUploadFiles = [];
 
     const NAMA_BULAN = [
         "Januari", "Februari", "Maret", "April", "Mei", "Juni",
@@ -565,7 +569,7 @@
             }
             updateFilesSummary();
         }
-        inputElem.value = ''; // Reset input agar bisa dipakai berulang kali
+        inputElem.value = '';
     }
 
     function updateFilesSummary() {
@@ -676,7 +680,6 @@
         document.getElementById('userInfo').style.display = 'flex';
         document.getElementById('userDisplayName').innerText = currentUser.nama;
 
-        // Set default filter ke bulan dan tahun saat ini
         const now = new Date();
         const curMonth = String(now.getMonth() + 1).padStart(2, '0');
         const curYear = String(now.getFullYear());
@@ -701,7 +704,6 @@
         document.getElementById('prevJabatan').innerText = currentUser.jabatan;
         document.getElementById('prevUnit').innerText = currentUser.unit;
 
-        // Update teks periode berdasarkan filter bulan & tahun aktif
         const b = document.getElementById('filterBulan') ? document.getElementById('filterBulan').value : 'all';
         const y = document.getElementById('filterTahun') ? document.getElementById('filterTahun').value : 'all';
 
@@ -722,7 +724,6 @@
             .then(data => {
                 let list = Array.isArray(data) ? data : [];
                 
-                // Urutkan tanggal dari terlama ke terbaru
                 list.sort((a, b) => {
                     const timeA = new Date(a.tanggal).getTime() || 0;
                     const timeB = new Date(b.tanggal).getTime() || 0;

@@ -1,4 +1,4 @@
-     <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -70,12 +70,34 @@
         .btn-warning { background: #d97706; color: white; }
         .btn-danger { background: #dc2626; color: white; }
 
+        /* MODAL FIX */
         .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: center;
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh;
+            background: rgba(0,0,0,0.6); 
+            z-index: 9999; 
+            justify-content: center; 
+            align-items: center;
             padding: 15px;
         }
-        .modal-content { background: white; padding: 25px; border-radius: 8px; width: 100%; max-width: 420px; }
+        .modal-content { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 8px; 
+            width: 100%; 
+            max-width: 420px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            animation: modalFadeIn 0.2s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
         /* DASHBOARD & FORM LAYOUT */
         .app-container { max-width: 1300px; margin: 20px auto; display: grid; grid-template-columns: 420px 1fr; gap: 20px; padding: 0 20px; }
@@ -87,7 +109,7 @@
             width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.9rem;
         }
 
-        /* SECTION FILTER CETAK */
+        /* FILTER CETAK PER BULAN & TAHUN */
         .filter-section {
             margin-top: 20px;
             padding-top: 15px;
@@ -97,7 +119,7 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         /* THUMBNAIL EDIT GAMBAR */
@@ -219,7 +241,7 @@
                 color: #000000 !important;
                 font-family: "Times New Roman", Times, serif !important;
             }
-            .no-print, .col-aksi, th.col-aksi, td.col-aksi, .navbar { 
+            .no-print, .col-aksi, th.col-aksi, td.col-aksi, .navbar, .modal { 
                 display: none !important; 
             }
             .app-container { 
@@ -277,12 +299,12 @@
             📋 LaporAksi Digital
         </div>
         <div id="navButtons" class="nav-btn-group">
-            <button class="btn btn-outline" onclick="openModal('modalLogin')">Masuk / Login</button>
-            <button class="btn btn-primary" onclick="openModal('modalRegister')">Daftar Akun</button>
+            <button type="button" class="btn btn-outline" onclick="openModal('modalLogin')">Masuk / Login</button>
+            <button type="button" class="btn btn-primary" onclick="openModal('modalRegister')">Daftar Akun</button>
         </div>
         <div id="userInfo" style="display: none; align-items: center; justify-content: space-between; width: 100%;">
             <span id="userDisplayName" style="font-weight: bold; color: var(--primary);"></span>
-            <button class="btn btn-danger" onclick="logout()">Keluar</button>
+            <button type="button" class="btn btn-danger" onclick="logout()">Keluar</button>
         </div>
     </nav>
 
@@ -293,7 +315,7 @@
             <p>Kelola laporan harian, integrasi bukti dokumen Google Drive (Folder data_jurnal), dan cetak format PDF resmi secara otomatis.</p>
             
             <div class="hero-action-btns">
-                <button class="btn btn-primary" style="padding: 12px 24px; font-size: 1rem;" onclick="openModal('modalLogin')">Mulai Sekarang</button>
+                <button type="button" class="btn btn-primary" style="padding: 12px 24px; font-size: 1rem;" onclick="openModal('modalLogin')">Mulai Sekarang</button>
                 <a href="aboutme.html" class="btn btn-outline-light" style="padding: 12px 24px; font-size: 1rem;">Development</a>
             </div>
         </section>
@@ -364,7 +386,7 @@
                     <button type="button" class="btn btn-warning" id="btnCancel" style="display:none;" onclick="cancelEdit()">Batal</button>
                 </div>
 
-                <!-- OPSI FILTER CETAK PDF PER BULAN & TAHUN -->
+                <!-- PILIHAN FILTER BULAN DAN TAHUN -->
                 <div class="filter-section">
                     <h2>Filter & Cetak Dokumen</h2>
                     <div class="filter-grid">
@@ -392,7 +414,7 @@
                                 <option value="all">-- Semua Tahun --</option>
                                 <option value="2024">2024</option>
                                 <option value="2025">2025</option>
-                                <option value="2026" selected>2026</option>
+                                <option value="2026">2026</option>
                                 <option value="2027">2027</option>
                                 <option value="2028">2028</option>
                             </select>
@@ -439,8 +461,8 @@
             <h2 style="margin-bottom: 20px; text-align: center;">Login Pegawai</h2>
             <div class="form-group"><label>Email</label><input type="email" id="loginEmail"></div>
             <div class="form-group"><label>Password</label><input type="password" id="loginPassword"></div>
-            <button class="btn btn-primary" id="btnLoginBtn" style="width: 100%; margin-top: 10px; padding: 10px;" onclick="submitLogin()">Masuk</button>
-            <button class="btn btn-outline" style="width: 100%; margin-top: 8px;" onclick="closeModal('modalLogin')">Tutup</button>
+            <button type="button" class="btn btn-primary" id="btnLoginBtn" style="width: 100%; margin-top: 10px; padding: 10px;" onclick="submitLogin()">Masuk</button>
+            <button type="button" class="btn btn-outline" style="width: 100%; margin-top: 8px;" onclick="closeModal('modalLogin')">Tutup</button>
         </div>
     </div>
 
@@ -455,14 +477,14 @@
             <div class="form-group"><label>Jabatan</label><input type="text" id="regJabatan"></div>
             <div class="form-group"><label>Unit Kerja</label><input type="text" id="regUnit"></div>
             <div class="form-group"><label>Periode Penilaian</label><input type="text" id="regPeriode" value="2026"></div>
-            <button class="btn btn-primary" id="btnRegBtn" style="width: 100%; margin-top: 10px; padding: 10px;" onclick="submitRegister()">Daftar</button>
-            <button class="btn btn-outline" style="width: 100%; margin-top: 8px;" onclick="closeModal('modalRegister')">Tutup</button>
+            <button type="button" class="btn btn-primary" id="btnRegBtn" style="width: 100%; margin-top: 10px; padding: 10px;" onclick="submitRegister()">Daftar</button>
+            <button type="button" class="btn btn-outline" style="width: 100%; margin-top: 8px;" onclick="closeModal('modalRegister')">Tutup</button>
         </div>
     </div>
 
 <script>
     // URL WEB APP DEPLOYMENT GOOGLE APPS SCRIPT
-    const SCRIPT_URL = " const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwNvwB2P7ceRthQp_UE7SaJDOZH4h6PQo2I1f5vymR-VJuL0B-GqV7y---og7S4_3y5yw/exec";";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwNvwB2P7ceRthQp_UE7SaJDOZH4h6PQo2I1f5vymR-VJuL0B-GqV7y---og7S4_3y5yw/exec";
 
     let currentUser = null;
     let entries = [];
@@ -475,9 +497,26 @@
         "Juli", "Agustus", "September", "Oktober", "November", "Desember"
     ];
 
-    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-    function showLoading(show) { document.getElementById('loadingStatus').style.display = show ? 'block' : 'none'; }
+    function openModal(id) { 
+        const m = document.getElementById(id);
+        if (m) m.style.display = 'flex'; 
+    }
+    
+    function closeModal(id) { 
+        const m = document.getElementById(id);
+        if (m) m.style.display = 'none'; 
+    }
+
+    window.onclick = function(event) {
+        if (event.target.classList && event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
+        }
+    };
+
+    function showLoading(show) { 
+        const el = document.getElementById('loadingStatus');
+        if (el) el.style.display = show ? 'block' : 'none'; 
+    }
 
     function submitLogin() {
         const email = document.getElementById('loginEmail').value.trim();
@@ -578,7 +617,7 @@
         document.getElementById('userInfo').style.display = 'flex';
         document.getElementById('userDisplayName').innerText = currentUser.nama;
 
-        // Set default filter bulan dan tahun sesuai tanggal sekarang
+        // Set default filter ke bulan dan tahun saat ini
         const now = new Date();
         const curMonth = String(now.getMonth() + 1).padStart(2, '0');
         const curYear = String(now.getFullYear());
@@ -603,9 +642,9 @@
         document.getElementById('prevJabatan').innerText = currentUser.jabatan;
         document.getElementById('prevUnit').innerText = currentUser.unit;
 
-        // Tampilkan periode dinamis sesuai filter
-        const b = document.getElementById('filterBulan').value;
-        const y = document.getElementById('filterTahun').value;
+        // Update teks periode berdasarkan filter bulan & tahun aktif
+        const b = document.getElementById('filterBulan') ? document.getElementById('filterBulan').value : 'all';
+        const y = document.getElementById('filterTahun') ? document.getElementById('filterTahun').value : 'all';
 
         if (b !== 'all' && y !== 'all') {
             const bulanNama = NAMA_BULAN[parseInt(b, 10) - 1];
@@ -624,7 +663,7 @@
             .then(data => {
                 let list = Array.isArray(data) ? data : [];
                 
-                // Urutkan tanggal dari awal ke akhir
+                // Urutkan tanggal dari terlama ke terbaru
                 list.sort((a, b) => {
                     const timeA = new Date(a.tanggal).getTime() || 0;
                     const timeB = new Date(b.tanggal).getTime() || 0;
@@ -647,7 +686,7 @@
 
         displayedEntries = entries.filter(item => {
             if (!item.tanggal) return false;
-            const parts = item.tanggal.split('-'); // format yyyy-mm-dd
+            const parts = item.tanggal.split('-'); // format: yyyy-mm-dd
             if (parts.length < 3) return false;
 
             const yyyy = parts[0];
@@ -668,7 +707,7 @@
         tbody.innerHTML = '';
 
         if (displayedEntries.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 15px; color: #64748b;">Tidak ada data kegiatan pada periode yang dipilih.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 20px; color: #64748b;">Tidak ada data kegiatan pada periode yang dipilih.</td></tr>`;
             return;
         }
 
@@ -686,8 +725,8 @@
                 <td class="col-kegiatan">${formattedKegiatan}</td>
                 <td class="col-dokumen">${formattedDokumen}</td>
                 <td class="col-aksi" style="text-align:center;">
-                    <button class="btn btn-warning" onclick="editEntryById('${item.id}')">Edit</button>
-                    <button class="btn btn-danger" onclick="deleteEntryById('${item.id}')">Hapus</button>
+                    <button type="button" class="btn btn-warning" onclick="editEntryById('${item.id}')">Edit</button>
+                    <button type="button" class="btn btn-danger" onclick="deleteEntryById('${item.id}')">Hapus</button>
                 </td>
             `;
             tbody.appendChild(tr);
